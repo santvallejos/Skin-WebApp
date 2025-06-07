@@ -73,7 +73,7 @@ const Navbar = () => {
           
           {/* Centro: Logo/Nombre en el centro */}
           <div className="flex-shrink-0 flex items-start">
-            <h1 className="text-xl font-bold text-gray-900">SKIN</h1>
+            <img src="public/LogoNavbar.png" alt="Logo" className="h-10 object-cover" />
           </div>
           
           {/* Derecha: Carrito de compras */}

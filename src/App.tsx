@@ -1,13 +1,11 @@
 import Navbar from './components/Navbar';
 import Carousel from './components/Carousel';
+import FeaturedProducts from './components/FeaturedProducts';
 
 function App() {
-  // Ejemplo de imágenes para el carousel (reemplaza con tus propias URLs)
   const carouselImages = [
-    '',
-    'https://via.placeholder.com/1200x400?text=Imagen+2',
-    'https://via.placeholder.com/1200x400?text=Imagen+3',
-    'https://via.placeholder.com/1200x400?text=Imagen+4',
+    'https://acdn-us.mitiendanube.com/stores/001/096/065/themes/baires/1-slide-1747233659500-5849132071-6fd76fe510ad3f73ff33687c63b5c6cc1747233662-1920-1920.jpg?2121089043',
+    '/1.png'
   ];
 
   return (
@@ -19,6 +17,7 @@ function App() {
             showControls={true} 
             showIndicators={true} 
           />
+        <FeaturedProducts />
       </>
   )
 }

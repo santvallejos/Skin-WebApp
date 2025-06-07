@@ -121,7 +121,7 @@ const Carousel = ({
             <img 
               src={image} 
               alt={`Slide ${index + 1}`} 
-              className="w-full h-auto object-cover"
+              className="w-full h-[600px] object-contain"
               draggable="false"
             />
           </div>
