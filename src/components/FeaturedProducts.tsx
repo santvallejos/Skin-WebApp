@@ -40,9 +40,11 @@ function FeaturedProducts() {
                     <li className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         {productsFeatured.map((product) => (
                             <div className="flex flex-col gap-2 w-full h-full">
-                                <img src={product.image} alt={product.name} className="w-92 h-92 object-cover"/>
-                                <h3 className="text-lg font-bold">{product.name}</h3>
-                                <p className="text-sm text-gray-500">${product.price}</p>
+                                <img src={product.image} alt={product.name} className="w-92 h-92 object-cover rounded-2xl"/>
+                                <div className="flex flex-col items-center gap-2">
+                                    <h3 className="text-lg font-bold">{product.name}</h3>
+                                    <p className="text-sm text-gray-500">${product.price}</p>
+                                </div>
                             </div>
                         ))}
                     </li>

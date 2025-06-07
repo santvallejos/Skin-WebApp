@@ -97,10 +97,10 @@ const Carousel = ({
   };
   
   return (
-    <div className="relative overflow-hidden w-full">
+    <div className="relative overflow-hidden w-full max-h-[80vh]">
       <div 
         ref={carouselRef}
-        className="flex transition-transform duration-300 ease-out"
+        className="flex transition-transform duration-300 ease-out h-full"
         style={{
           transform: `translateX(calc(-${currentIndex * 100}% + ${translateX}px))`,
         }}
@@ -121,7 +121,7 @@ const Carousel = ({
             <img 
               src={image} 
               alt={`Slide ${index + 1}`} 
-              className="w-full h-[600px] object-contain"
+              className="w-full h-full object-cover max-h-[80vh]"
               draggable="false"
             />
           </div>

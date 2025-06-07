@@ -1,6 +1,7 @@
 import Navbar from './components/Navbar';
 import Carousel from './components/Carousel';
 import FeaturedProducts from './components/FeaturedProducts';
+import AboutUs from './components/AboutUs';
 
 function App() {
   const carouselImages = [
@@ -18,6 +19,7 @@ function App() {
             showIndicators={true} 
           />
         <FeaturedProducts />
+        <AboutUs />
       </>
   )
 }
