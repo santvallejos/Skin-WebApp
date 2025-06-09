@@ -28,7 +28,7 @@ function FeaturedProducts() {
 
 
     return (
-        <section className="flex flex-col gap-4 p-4">
+        <section className="flex flex-col gap-4 p-4 bg-black">
             {/* Title */}
             <div className="flex justify-center items-center w-full">
                 <h2 className="text-2xl font-bold">Featured Products</h2>
