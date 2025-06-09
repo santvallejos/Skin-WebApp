@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 interface CartItem {
   id: number;
@@ -20,10 +21,10 @@ const Navbar = () => {
   ]);
 
   const itemsMenu = [
-    { section: 'Inicio', href: '#inicio' },
-    { section: 'Productos', href: '#productos' },
-    { section: 'Como comprar?', href: '#ComoComprar'},
-    { section: 'Contacto', href: '#contacto' },
+    { section: 'Inicio', href: '/' },
+    { section: 'Productos', href: '/productos' },
+    { section: 'Como comprar?', href: '/#ComoComprar'},
+    { section: 'Contacto', href: '/contacto' },
   ];
 
   // Función para calcular el total del carrito
@@ -143,13 +144,9 @@ const Navbar = () => {
             <ul className="space-y-4">
               {itemsMenu.map((item) => (
                 <li key={item.section}>
-                  <a
-                    href={item.href}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    onClick={() => setIsMenuOpen(false)} // Cerrar el menú al hacer clic en un enlace
-                  >
+                  <Link to={item.href} className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100' onClick={() => setIsMenuOpen(false)}>
                     {item.section}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

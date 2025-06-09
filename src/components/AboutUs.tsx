@@ -71,7 +71,7 @@ function AboutUs() {
             </div>
             </section>
 
-            <section className="text-gray-600 body-font bg-black">
+            <section id="#ComoComprar" className="text-gray-600 body-font bg-black">
                 <div className="container px-5 pt-3 pb-12 mx-auto">
                     <h1 className="sm:text-3xl text-2xl font-medium title-font text-center text-white mb-20">¿Como Comprar?
                     </h1>
