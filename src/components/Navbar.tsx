@@ -22,9 +22,9 @@ const Navbar = () => {
 
   const itemsMenu = [
     { section: 'Inicio', href: '/' },
-    { section: 'Productos', href: '/productos' },
+    { section: 'Productos', href: '/products' },
     { section: 'Como comprar?', href: '/#ComoComprar'},
-    { section: 'Contacto', href: '/contacto' },
+    { section: 'Contacto', href: '/contact' },
   ];
 
   // Función para calcular el total del carrito
