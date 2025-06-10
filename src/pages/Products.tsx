@@ -7,6 +7,7 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet"
 import { Link } from "react-router-dom";
+import slugify from "@/lib/slugify";
 
 const productsFeatured = [
     {
@@ -57,18 +58,20 @@ function Products() {
             </div>
 
             <ul className="flex flex-col gap-4 justify-center items-center">
-                    <li className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        {productsFeatured.map((product) => (
-                            <Link to={product.id}  className="flex flex-col gap-2 w-full h-full">
-                                <img src={product.image} alt={product.name} className="w-92 h-92 object-cover rounded-2xl"/>
-                                <div className="flex flex-col items-center gap-2">
-                                    <h3 className="text-lg font-bold">{product.name}</h3>
-                                    <p className="text-sm text-gray-500">${product.price}</p>
-                                </div>
-                            </Link>
-                        ))}
-                    </li>
-                </ul>
+                <li className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {productsFeatured.map((product) => (
+                        //Con el slugify hacemos que el nombre del producto aparecas en la ruta en ves del id
+                        //y como estado le pasamos el id para que el componente Product pueda acceder a él
+                        <Link to={`/products/${slugify(product.name)}`} state={{ id: product.id }} className="flex flex-col gap-2 w-full h-full">
+                            <img src={product.image} alt={product.name} className="w-92 h-92 object-cover rounded-2xl" />
+                            <div className="flex flex-col items-center gap-2">
+                                <h3 className="text-lg font-bold">{product.name}</h3>
+                                <p className="text-sm text-gray-500">${product.price}</p>
+                            </div>
+                        </Link>
+                    ))}
+                </li>
+            </ul>
         </section>
     );
 }

@@ -1,7 +1,7 @@
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 function Product() {
-    const { id } = useParams();
+    const id = useLocation().state?.id;
 
     return (
         <>
