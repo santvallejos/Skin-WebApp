@@ -26,7 +26,6 @@ function Products() {
         };
 
         fetchProducts();
-        console.log("Products fetched:", products);
     });
 
     return (

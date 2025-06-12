@@ -8,4 +8,5 @@ export interface ItemCart {
     name: string;
     price: number;
     models: MoldelsProduct[];
+    total: number;
 }

@@ -1,7 +1,15 @@
 import type { Product } from "../models/ProductModel";
 
 export const getAllProducts = async (): Promise<Product[]> => {
-    const response = await fetch("https://raw.githubusercontent.com/santvallejos/Base-de-datos-JSONs/refs/heads/main/Skin-WebApp/Products.json");
+    const GITHUB_TOKEN = import.meta.env.VITE_GITHUB_TOKEN; // Token para acceder al json ya que es privado
+    const url = "https://api.github.com/repos/santvallejos/Base-de-datos-JSONs/contents/Skin-WebApp/Products.json?ref=main";
+
+    const response = await fetch(url, {
+        headers: {
+            Authorization: `Bearer ${GITHUB_TOKEN}`,
+            Accept: "application/vnd.github.v3.raw"
+        }
+    });
 
     if (!response.ok) {
         throw new Error("Error al obtener los recursos recomendados");
@@ -9,4 +17,14 @@ export const getAllProducts = async (): Promise<Product[]> => {
 
     const data: Product[] = await response.json();
     return data;
+}
+
+export const getProductById = async (id: string): Promise<Product> => {
+    const products = await getAllProducts(); // Obtener todos los productos
+    const product = products.find((product) => product.id === id); // Buscar el producto por su id
+    if(!product) {
+        throw new Error("Producto no encontrado");
+    } else {
+        return product;
+    }
 }
