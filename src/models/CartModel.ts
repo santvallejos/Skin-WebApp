@@ -1,6 +1,6 @@
+import type { ProductToCart } from "./ProductModel";
+
 export interface CartItem {
-    id: number;
-    name: string;
-    price: number;
+    product: ProductToCart;
     quantity: number;
 }  

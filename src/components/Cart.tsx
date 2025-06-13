@@ -1,46 +1,20 @@
-import type { CartItem } from "@/models/CartModel";
+import { useCartStore } from "@/store/CartStore";
 
 interface CartProps {
   isOpen: boolean;
   onClose: () => void;
-  cartItems: CartItem[];
-  setCartItems: React.Dispatch<React.SetStateAction<CartItem[]>>;
 }
 
-const Cart = ({ isOpen, onClose, cartItems, setCartItems }: CartProps) => {
-  // Función para calcular el total del carrito
-  const calculateTotal = () => {
-    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-  };
+const Cart = ({ isOpen, onClose }: CartProps) => {
+  const {
+    items,
+    removeCart,
+    updateQuantity,
+  } = useCartStore();
 
-  // Función para enviar pedido a WhatsApp
-  const sendToWhatsApp = () => {
-    const phoneNumber = '1234567890'; // Reemplazar con el número real
-    const message = `Hola, me gustaría confirmar mi compra:\n\n${cartItems
-      .map(item => `${item.name} x${item.quantity} - $${(item.price * item.quantity).toFixed(2)}`)
-      .join('\n')}\n\nTotal: $${calculateTotal().toFixed(2)}`;
-    
-    const encodedMessage = encodeURIComponent(message);
-    window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
-  };
-
-  // Función para eliminar item del carrito
-  const removeFromCart = (itemId: number) => {
-    setCartItems(prevItems => prevItems.filter(item => item.id !== itemId));
-  };
-
-  // Función para actualizar cantidad
-  const updateQuantity = (itemId: number, newQuantity: number) => {
-    if (newQuantity <= 0) {
-      removeFromCart(itemId);
-      return;
-    }
-    setCartItems(prevItems => 
-      prevItems.map(item => 
-        item.id === itemId ? { ...item, quantity: newQuantity } : item
-      )
-    );
-  };
+  const handleRemoveItemCart = (id: string) => {
+    removeCart(id);
+  }
 
   return (
     <div 
@@ -69,41 +43,42 @@ const Cart = ({ isOpen, onClose, cartItems, setCartItems }: CartProps) => {
         <div className="flex flex-col h-full">
           {/* Lista de productos */}
           <div className="flex-grow overflow-y-auto p-4">
-            {cartItems.length === 0 ? (
+            {items.length === 0 ? (
               <p className="text-center text-gray-500 py-8">Tu carrito está vacío</p>
             ) : (
               <ul className="divide-y divide-gray-200">
-                {cartItems.map((item) => (
-                  <li key={item.id} className="py-4 flex">
+                {items.map((item) => (
+                  <li key={item.product.id} className="py-4 flex">
+                    <img src={item.product.imageUrl} alt={item.product.name} className="h-20 w-20"/>
                     <div className="flex-grow">
-                      <h3 className="text-sm font-medium text-gray-900">{item.name}</h3>
-                      <p className="mt-1 text-sm text-gray-500">${item.price.toFixed(2)} x {item.quantity}</p>
+                      <h3 className="text-sm font-medium text-gray-900">{item.product.name} - {item.product.model}</h3>
+                      <p className="mt-1 text-sm text-gray-500">${item.product.price.toFixed(3)} x {item.quantity}</p>
                       <div className="flex items-center mt-2 space-x-2">
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
                           className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-300"
                         >
                           -
                         </button>
                         <span className="text-sm font-medium">{item.quantity}</span>
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
                           className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-300"
                         >
                           +
-                        </button>
-                        <button
-                          onClick={() => removeFromCart(item.id)}
-                          className="ml-2 text-red-500 hover:text-red-700 text-sm"
-                        >
-                          Eliminar
                         </button>
                       </div>
                     </div>
                     <div className="ml-4 flex-shrink-0">
                       <p className="text-sm font-medium text-gray-900">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        ${(item.product.price * item.quantity).toFixed(3)}
                       </p>
+                      <button
+                          onClick={() => handleRemoveItemCart(item.product.id)}
+                          className="ml-2 text-red-500 hover:text-red-700"
+                        >
+                          Borrar
+                        </button> 
                     </div>
                   </li>
                 ))}
@@ -112,11 +87,11 @@ const Cart = ({ isOpen, onClose, cartItems, setCartItems }: CartProps) => {
           </div>
           
           {/* Resumen y botón de compra */}
-          {cartItems.length > 0 && (
+          {/* {items.length > 0 && (
             <div className="border-t border-gray-200 p-4">
               <div className="flex justify-between text-base font-medium text-gray-900 mb-4">
                 <p>Total</p>
-                <p>${calculateTotal().toFixed(2)}</p>
+                <p>${totalPrice.toFixed(3)}</p>
               </div>
               <button
                 onClick={sendToWhatsApp}
@@ -128,7 +103,7 @@ const Cart = ({ isOpen, onClose, cartItems, setCartItems }: CartProps) => {
                 Confirmar por WhatsApp
               </button>
             </div>
-          )}
+          )} */}
         </div>
       </div>
     </div>

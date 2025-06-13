@@ -11,3 +11,7 @@ export interface Product{
     price: number;
     modelsStock: ProductVariant[]; // Por cada modelo hay cierta cantidad de stock
 }
+
+export interface ProductToCart extends Pick<Product, 'id' | 'name' | 'imageUrl' | 'price'> {
+    model: string;
+}
