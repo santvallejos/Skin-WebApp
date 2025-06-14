@@ -1,4 +1,4 @@
-function slugify(text: string): string {
+export function slugify(text: string): string {
     return text
         .toLowerCase()
         .trim()
@@ -7,4 +7,9 @@ function slugify(text: string): string {
         .replace(/\-\-+/g, '-');        // reemplaza múltiples guiones por uno solo
 }
 
-export default slugify;
+export function deslugify(slug: string): string {
+    return slug
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }

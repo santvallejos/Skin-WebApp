@@ -7,7 +7,7 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet"
 import { Link } from "react-router-dom";
-import slugify from "@/lib/slugify";
+import { slugify } from "@/lib/slugify";
 import { useEffect, useState } from "react";
 import { getAllProducts } from "@/services/ProductsServices";
 import type { Product } from "@/models/ProductModel";

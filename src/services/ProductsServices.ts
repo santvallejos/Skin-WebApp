@@ -28,3 +28,13 @@ export const getProductById = async (id: string): Promise<Product> => {
         return product;
     }
 }
+
+export const getProductByName = async (name: string): Promise<Product> => {
+    const products = await getAllProducts(); // Obtener todos los productos
+    const product = products.find((product) => product.name === name); // Buscar el producto por su nombre
+    if(!product) {
+        throw new Error("Producto no encontrado");
+    } else {
+        return product;
+    }
+}

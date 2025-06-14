@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import type { Product } from '@/models/ProductModel';
-import { getProductById } from '@/services/ProductsServices';
+import { getProductByName } from '@/services/ProductsServices';
 import { useCartStore } from '@/store/CartStore';
+import { deslugify } from '@/lib/slugify';
 
 function Product() {
     const {
         addCart
     } = useCartStore();
-    const id = useLocation().state.id;                         // Obtener el ID del producto desde el estado
+    const { name: slug } = useParams<{ name: string }>();       // Obtener el ID del producto desde el estado
     const [product, setProduct] = useState<Product>();          // Estado para almacenar el producto
 
     const handleAddCart = (product: Product) => {
@@ -23,12 +24,13 @@ function Product() {
     }
 
     useEffect(() => {
-        if (id) {
-            getProductById(id).then((product) => {
+        const nameOriginal = slug ? deslugify(slug) : '';
+        if (nameOriginal) {
+            getProductByName(nameOriginal).then((product) => {
                 setProduct(product);
-            });
+            })
         }
-    }, [id]);
+    }, [slug]);
 
     return (
         <section className="text-gray-600 body-font overflow-hidden">

@@ -12,12 +12,6 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  
-  // Estado para los items del carrito (ejemplo)
-/*   const [cartItems, setCartItems] = useState<CartItem[]>([
-    { id: 1, name: 'Producto 1', price: 29.99, quantity: 1 },
-    { id: 2, name: 'Producto 2', price: 39.99, quantity: 2 },
-  ]); */
 
   const itemsMenu = [
     { section: 'Inicio', href: '/' },
