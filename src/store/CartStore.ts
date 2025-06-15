@@ -9,9 +9,14 @@ interface cartStore {
     addCart: (product: ProductToCart) => void;                 // Agregar un producto al carrito
     removeCart: (id: string) => void;                          // Remover un producto del carrito
     updateQuantity: (id: string, quantity: number) => void;    // Actualizar la cantidad de un producto en el carrito
+    clearCart: () => void;                                     // Limpiar el carrito
+
+    // Getters
+    getSubtotal: (id: string) => number;
+    getTotal: () => number;
 }
 
-export const useCartStore = create<cartStore>((set) => ({
+export const useCartStore = create<cartStore>((set, get) => ({
     // inicializar variables
     items: [],
 
@@ -72,4 +77,18 @@ export const useCartStore = create<cartStore>((set) => ({
             }))
         }
     },
+    clearCart: () => {
+        // Limpiar el carrito
+        set({ items: [] });
+    },
+    // Getter: subtotal de un ítem
+    getSubtotal: (productId) => {
+        const item = get().items.find(item => item.product.id === productId);
+        return item ? item.quantity * item.product.price : 0;
+    },
+
+    // Getter: total del carrito
+    getTotal: () => {
+        return get().items.reduce((sum, item) => sum + item.quantity * item.product.price, 0);
+    }
 }))
