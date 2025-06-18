@@ -6,6 +6,8 @@ import type { Product } from "@/models/ProductModel";
 
 function FeaturedProducts() {
     const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+    // Estado para controlar qué productos están en hover
+    const [hoveredProductId, setHoveredProductId] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchFeatureProducts = async () => {
@@ -19,9 +21,6 @@ function FeaturedProducts() {
 
         fetchFeatureProducts();
     });
-
-    // Estado para controlar qué productos están en hover
-    const [hoveredProductId, setHoveredProductId] = useState<string | null>(null);
 
     return (
         <section className="flex flex-col gap-4 p-4 bg-[#f2ebd9] rounded-b-3xl">
@@ -37,7 +36,7 @@ function FeaturedProducts() {
                         {featuredProducts.map((product) => (
                             <div 
                                 key={product.id}
-                                className="flex flex-col gap-2 w-full h-full bg-[#191919] p-5 rounded-2xl"
+                                className="flex flex-col gap-2 w-full h-full bg-[#191919] rounded-2xl border border-neutral-400"
                             >
                                 <Link 
                                     to={`/products/${slugify(product.name)}`} 
@@ -46,13 +45,13 @@ function FeaturedProducts() {
                                     onMouseEnter={() => setHoveredProductId(product.id)}
                                     onMouseLeave={() => setHoveredProductId(null)}
                                 >
-                                    <div className="relative w-72 h-72">
+                                    <div className="relative w-72 h-96">
                                         {/* Imagen por defecto */}
                                         <img
                                             src={product.images[0]}
                                             alt={product.name}
                                             className={`
-                                                absolute inset-0 w-full h-full object-cover rounded-2xl
+                                                absolute inset-0 w-full h-full object-cover rounded-t-2xl
                                                 transition-opacity duration-500 ease-in-out
                                                 ${hoveredProductId === product.id ? 'opacity-0' : 'opacity-100'}
                                             `}
@@ -62,7 +61,7 @@ function FeaturedProducts() {
                                             src={product.images[1]}
                                             alt={product.name}
                                             className={`
-                                                absolute inset-0 w-full h-full object-cover rounded-2xl
+                                                absolute inset-0 w-full h-full object-cover rounded-t-2xl
                                                 transition-opacity duration-500 ease-in-out
                                                 ${hoveredProductId === product.id ? 'opacity-100' : 'opacity-0'}
                                             `}
