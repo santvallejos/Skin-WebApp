@@ -5,8 +5,10 @@ function Layaout({ children }: { children: React.ReactNode }) {
     return (
         <>
             <Navbar />
-                {children}
-            <Footer/>
+                <div className="pt-16">
+                    {children}
+                </div>
+            <Footer />
         </>
     );
 }
