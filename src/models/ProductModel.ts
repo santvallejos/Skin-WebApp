@@ -7,11 +7,11 @@ export interface Product{
     id: string;
     name: string;
     description: string;
-    imageUrl: string;
+    images: string[];
     price: number;
     modelsStock: ProductVariant[]; // Por cada modelo hay cierta cantidad de stock
 }
 
-export interface ProductToCart extends Pick<Product, 'id' | 'name' | 'imageUrl' | 'price'> {
+export interface ProductToCart extends Pick<Product, 'id' | 'name' | 'images' | 'price'> {
     model: string;
 }

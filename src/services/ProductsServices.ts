@@ -1,7 +1,8 @@
 import type { Product } from "../models/ProductModel";
 
+const GITHUB_TOKEN = import.meta.env.VITE_GITHUB_TOKEN; // Token para acceder al json ya que es privado
+
 export const getAllProducts = async (): Promise<Product[]> => {
-    const GITHUB_TOKEN = import.meta.env.VITE_GITHUB_TOKEN; // Token para acceder al json ya que es privado
     const url = "https://api.github.com/repos/santvallejos/Base-de-datos-JSONs/contents/Skin-WebApp/Products.json?ref=main";
 
     const response = await fetch(url, {
@@ -12,7 +13,25 @@ export const getAllProducts = async (): Promise<Product[]> => {
     });
 
     if (!response.ok) {
-        throw new Error("Error al obtener los recursos recomendados");
+        throw new Error("Error al obtener los recursos de productos");
+    }
+
+    const data: Product[] = await response.json();
+    return data;
+}
+
+export const getFeaturedProducts = async (): Promise<Product[]> => {
+    const url = "https://api.github.com/repos/santvallejos/Base-de-datos-JSONs/contents/Skin-WebApp/FeaturedProducts.json?ref=main";
+
+    const response = await fetch(url, {
+        headers: {
+            Authorization: `Bearer ${GITHUB_TOKEN}`,
+            Accept: "application/vnd.github.v3.raw"
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error("Error al obtener los recursos de productos destacados");
     }
 
     const data: Product[] = await response.json();
