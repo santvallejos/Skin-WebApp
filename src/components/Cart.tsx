@@ -51,7 +51,7 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
               <ul className="divide-y divide-gray-200">
                 {items.map((item) => (
                   <li key={item.product.id} className="py-4 flex">
-                    <img src={item.product.imageUrl} alt={item.product.name} className="h-20 w-20"/>
+                    <img src={item.product.images[0]} alt={item.product.name} className="h-full w-20 pr-1"/>
                     <div className="flex-grow">
                       <h3 className="text-sm font-medium text-gray-900">{item.product.name} - {item.product.model}</h3>
                       <p className="mt-1 text-sm text-gray-500">${item.product.price.toFixed(3)} x {item.quantity}</p>
