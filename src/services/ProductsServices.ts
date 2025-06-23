@@ -57,3 +57,9 @@ export const getProductByName = async (name: string): Promise<Product> => {
         return product;
     }
 }
+
+export const getProductsRandom = async (): Promise<Product[]> => {
+    const products = await getAllProducts(); // Obtener todos los productos
+    const productsRandom = products.sort(() => Math.random() - 0.5); // Ordenar los productos de forma aleatoria
+    return productsRandom.slice(0, 4); // Devolver los 4 primeros productos
+}

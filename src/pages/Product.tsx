@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
+import { slugify } from '@/lib/slugify';
 import type { Product } from '@/models/ProductModel';
-import { getProductByName } from '@/services/ProductsServices';
+import { getProductByName, getProductsRandom} from '@/services/ProductsServices';
 import { useCartStore } from '@/store/CartStore';
 import { deslugify } from '@/lib/slugify';
 import Carousel from '@/components/Carousel';
@@ -12,6 +13,8 @@ function Product() {
     } = useCartStore();
     const { name: slug } = useParams<{ name: string }>();
     const [product, setProduct] = useState<Product>();
+    const [productsRandom, setProductsRandom] = useState<Product[]>([]);
+    const [hoveredProductId, setHoveredProductId] = useState<string | null>(null);
 
     const handleAddCart = (product: Product) => {
         const productToCart = {
@@ -29,6 +32,9 @@ function Product() {
         if (nameOriginal) {
             getProductByName(nameOriginal).then((product) => {
                 setProduct(product);
+            })
+            getProductsRandom().then((products) => {
+                setProductsRandom(products);
             })
         }
     }, [slug]);
@@ -97,6 +103,54 @@ function Product() {
                     </div>
                 </div>
             </div>
+
+            <ul className="flex flex-col gap-4 justify-center items-center">
+                <li className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {productsRandom.map((product) => (
+                        //Con el slugify hacemos que el nombre del producto aparecas en la ruta en ves del id
+                        //y como estado le pasamos el id para que el componente Product pueda acceder a él
+                        <div 
+                        key={product.id}
+                        className="flex flex-col gap-2 w-full h-full bg-[#191919] rounded-2xl border border-neutral-900"
+                    >
+                        <Link 
+                            to={`/products/${slugify(product.name)}`} 
+                            state={{ id: product.id }} 
+                            className="flex flex-col gap-2 w-full h-full"
+                            onMouseEnter={() => setHoveredProductId(product.id)}
+                            onMouseLeave={() => setHoveredProductId(null)}
+                        >
+                            <div className="relative w-72 h-96">
+                                {/* Imagen por defecto */}
+                                <img
+                                    src={product.images[0]}
+                                    alt={product.name}
+                                    className={`
+                                        absolute inset-0 w-full h-full object-cover rounded-t-2xl
+                                        transition-opacity duration-500 ease-in-out
+                                        ${hoveredProductId === product.id ? 'opacity-0' : 'opacity-100'}
+                                    `}
+                                />
+                                {/* Imagen al hover */}
+                                <img
+                                    src={product.images[1]}
+                                    alt={product.name}
+                                    className={`
+                                        absolute inset-0 w-full h-full object-cover rounded-t-2xl
+                                        transition-opacity duration-500 ease-in-out
+                                        ${hoveredProductId === product.id ? 'opacity-100' : 'opacity-0'}
+                                    `}
+                                />
+                            </div>
+                            <div className="flex flex-col items-center gap-2">
+                                <h3 className="text-lg font-bold text-white">{product.name}</h3>
+                                <p className="text-lg text-white">${product.price.toFixed(3)}</p>
+                            </div>
+                        </Link>
+                    </div>
+                    ))}
+                </li>
+            </ul>
         </section>
     );
 }
