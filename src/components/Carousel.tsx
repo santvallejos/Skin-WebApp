@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 
 interface CarouselProps {
-  images: string[];
+  images: string[] | undefined;
   autoPlayInterval?: number; // Intervalo en ms para el cambio automático
   showControls?: boolean; // Mostrar botones de control
   showIndicators?: boolean; // Mostrar indicadores de posición
+  containerClassName?: string; // Estilos al contenedor del carousel
 }
 
 const Carousel = ({
@@ -12,6 +13,7 @@ const Carousel = ({
   autoPlayInterval = 3000,
   showControls = true,
   showIndicators = true,
+  containerClassName = '',
 }: CarouselProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -21,21 +23,27 @@ const Carousel = ({
   
   // Función para ir a la siguiente imagen
   const nextSlide = () => {
-    setCurrentIndex((prevIndex) => 
-      prevIndex === images.length - 1 ? 0 : prevIndex + 1
-    );
+    if (images) {
+      setCurrentIndex((prevIndex) => 
+        prevIndex === images.length - 1 ? 0 : prevIndex + 1
+      );
+    }
   };
   
   // Función para ir a la imagen anterior
   const prevSlide = () => {
-    setCurrentIndex((prevIndex) => 
-      prevIndex === 0 ? images.length - 1 : prevIndex - 1
-    );
+    if (images) {
+      setCurrentIndex((prevIndex) => 
+        prevIndex === 0 ? images.length - 1 : prevIndex - 1
+      );
+    }
   };
   
   // Función para ir a una imagen específica
   const goToSlide = (index: number) => {
-    setCurrentIndex(index);
+    if (images) {
+      setCurrentIndex(index);
+    }
   };
   
   // Efecto para el autoplay
@@ -97,7 +105,7 @@ const Carousel = ({
   };
   
   return (
-    <div className="relative overflow-hidden w-full max-h-[80vh]">
+    <div className={`relative overflow-hidden w-full max-h-[80vh] ${containerClassName}`}>
       <div 
         ref={carouselRef}
         className="flex transition-transform duration-300 ease-out h-full"
@@ -112,7 +120,7 @@ const Carousel = ({
         onTouchMove={handleDragMove}
         onTouchEnd={handleDragEnd}
       >
-        {images.map((image, index) => (
+        {images?.map((image, index) => (
           <div 
             key={index} 
             className="w-full flex-shrink-0"
@@ -156,7 +164,7 @@ const Carousel = ({
       {showIndicators && (
         <div className="absolute bottom-4 left-0 right-0">
           <div className="flex justify-center space-x-2">
-            {images.map((_, index) => (
+            {images?.map((_, index) => (
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
