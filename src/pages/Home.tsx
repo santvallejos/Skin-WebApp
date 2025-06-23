@@ -1,9 +1,27 @@
 import Carousel from '../components/Carousel';
-import FeaturedProducts from '../components/FeaturedProducts';
 import AboutUs from '../components/AboutUs';
 import AnimatedContent from '@/components/ui/AnimatedContent';
+import { useEffect, useState } from "react";
+import { getFeaturedProducts } from "@/services/ProductsServices";
+import type { Product } from "@/models/ProductModel";
+import ListProducts from '@/components/ListProducts';
 
 function Home() {
+    const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+
+    useEffect(() => {
+        const fetchFeatureProducts = async () => {
+            try {
+                const featuredProductsData = await getFeaturedProducts();
+                setFeaturedProducts(featuredProductsData);
+            } catch (error) {
+                console.error("Error fetching products:", error);
+            }
+        };
+
+        fetchFeatureProducts();
+    });
+
     return (
         <>
             <Carousel
@@ -14,7 +32,15 @@ function Home() {
                 autoPlayInterval={5000}
                 showControls={true}
                 showIndicators={true}/>
-            <FeaturedProducts />
+                <div className="flex flex-col gap-4 p-4 bg-[#f2ebd9] rounded-b-3xl">
+                    {/* Title */}
+                    <div className="flex justify-center items-center w-full">
+                        <h2 className="text-4xl font-bold text-[#d41e2b] text-shadow-lg/20">Productos Destacados</h2>
+                    </div>
+
+                    {/* Lista de productos */}
+                    <ListProducts products={featuredProducts} />
+                </div>
             <AboutUs />
 
 
