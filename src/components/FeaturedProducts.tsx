@@ -11,7 +11,7 @@ function FeaturedProducts() {
 
     useEffect(() => {
         const fetchFeatureProducts = async () => {
-            try{
+            try {
                 const featuredProductsData = await getFeaturedProducts();
                 setFeaturedProducts(featuredProductsData);
             } catch (error) {
@@ -26,55 +26,58 @@ function FeaturedProducts() {
         <section className="flex flex-col gap-4 p-4 bg-[#f2ebd9] rounded-b-3xl">
             {/* Title */}
             <div className="flex justify-center items-center w-full">
-                <h2 className="text-4xl font-bold">Productos Destacados</h2>
+                <h2 className="text-4xl font-bold text-[#d41e2b] text-shadow-lg/20">Productos Destacados</h2>
             </div>
 
             {/* Products */}
-            <div className="flex justify-center items-center p-5">
-                <ul className="flex flex-col gap-4 justify-center items-center">
-                    <li className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        {featuredProducts.map((product) => (
-                            <div 
-                                key={product.id}
-                                className="flex flex-col gap-2 w-full h-full bg-[#191919] rounded-2xl border border-neutral-400"
+            <div className="p-5">
+                <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {featuredProducts.map((product) => (
+                        <li
+                            key={product.id}
+                            className="flex flex-col bg-[#191919] rounded-2xl border border-neutral-400 shadow-2xl overflow-hidden"
+                        >
+                            <Link
+                                to={`/products/${slugify(product.name)}`}
+                                state={{ id: product.id }}
+                                className="flex flex-col h-full"
+                                onMouseEnter={() => setHoveredProductId(product.id)}
+                                onMouseLeave={() => setHoveredProductId(null)}
                             >
-                                <Link 
-                                    to={`/products/${slugify(product.name)}`} 
-                                    state={{ id: product.id }} 
-                                    className="flex flex-col gap-2 w-full h-full"
-                                    onMouseEnter={() => setHoveredProductId(product.id)}
-                                    onMouseLeave={() => setHoveredProductId(null)}
-                                >
-                                    <div className="relative w-72 h-96">
-                                        {/* Imagen por defecto */}
-                                        <img
-                                            src={product.images[0]}
-                                            alt={product.name}
-                                            className={`
-                                                absolute inset-0 w-full h-full object-cover rounded-t-2xl
-                                                transition-opacity duration-500 ease-in-out
-                                                ${hoveredProductId === product.id ? 'opacity-0' : 'opacity-100'}
-                                            `}
-                                        />
-                                        {/* Imagen al hover */}
+                                <div className="relative w-full aspect-[3/4]">
+                                    <img
+                                        src={product.images[0]}
+                                        alt={product.name}
+                                        className={`
+                                            absolute inset-0 w-full h-full object-cover
+                                            transition-opacity duration-500 ease-in-out
+                                            ${hoveredProductId === product.id ? 'opacity-0' : 'opacity-100'}
+                                        `}
+                                    />
+                                    {product.images[1] && (
                                         <img
                                             src={product.images[1]}
                                             alt={product.name}
                                             className={`
-                                                absolute inset-0 w-full h-full object-cover rounded-t-2xl
-                                                transition-opacity duration-500 ease-in-out
-                                                ${hoveredProductId === product.id ? 'opacity-100' : 'opacity-0'}
+                                            absolute inset-0 w-full h-full object-cover
+                                            transition-opacity duration-500 ease-in-out
+                                            ${hoveredProductId === product.id ? 'opacity-100' : 'opacity-0'}
                                             `}
                                         />
-                                    </div>
-                                    <div className="flex flex-col items-center gap-2">
-                                        <h3 className="text-lg font-bold text-white">{product.name}</h3>
-                                        <p className="text-lg text-white">${product.price.toFixed(3)}</p>
-                                    </div>
-                                </Link>
-                            </div>
-                        ))}
-                    </li>
+                                    )}
+                                </div>
+
+                                <div className="flex flex-col items-center p-4 gap-2">
+                                    <h3 className="text-lg font-bold text-white truncate">
+                                        {product.name}
+                                    </h3>
+                                    <p className="text-lg text-white">
+                                        ${product.price.toFixed(3)}
+                                    </p>
+                                </div>
+                            </Link>
+                        </li>
+                    ))}
                 </ul>
             </div>
         </section>
