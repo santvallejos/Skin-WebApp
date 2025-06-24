@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Cart from './Cart';
 import { useCartStore } from '@/store/CartStore';
 
@@ -7,16 +7,55 @@ const Navbar = () => {
   const {
     items
   } = useCartStore();
+  
+  const location = useLocation();
+  const navigate = useNavigate();
 
   // Estados para controlar la visibilidad de los menús laterales
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Función para manejar el scroll a la sección ComoComprar
+  const handleComoComprarClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsMenuOpen(false); // Cerrar el menú si está abierto
+    
+    if (location.pathname === '/') {
+      // Si ya estamos en home, hacer scroll directo
+      const element = document.getElementById('ComoComprar');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      // Si estamos en otra página, navegar a home y luego hacer scroll
+      navigate('/');
+      // Usar setTimeout para asegurar que la página se haya cargado
+      setTimeout(() => {
+        const element = document.getElementById('ComoComprar');
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  };
+
+  // Efecto para manejar el scroll cuando se carga la página con hash
+  useEffect(() => {
+    if (location.pathname === '/' && location.hash === '#ComoComprar') {
+      setTimeout(() => {
+        const element = document.getElementById('ComoComprar');
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, [location]);
+
   const itemsMenu = [
     { section: 'Inicio', href: '/' },
     { section: 'Productos', href: '/products' },
-    { section: 'Como comprar?', href: '/#ComoComprar'},
+    { section: 'Como comprar?', href: '/#ComoComprar', onClick: handleComoComprarClick },
     { section: 'Contacto', href: '/contact' },
   ];
 
@@ -107,7 +146,7 @@ const Navbar = () => {
                   <input
                     type="text"
                     placeholder="Buscar productos..."
-                    className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -124,9 +163,23 @@ const Navbar = () => {
               <ul className="space-y-4">
                 {itemsMenu.map((item) => (
                   <li key={item.section}>
-                    <Link to={item.href} className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100' onClick={() => setIsMenuOpen(false)}>
-                      {item.section}
-                    </Link>
+                    {item.onClick ? (
+                      <a 
+                        href={item.href} 
+                        onClick={item.onClick}
+                        className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer'
+                      >
+                        {item.section}
+                      </a>
+                    ) : (
+                      <Link 
+                        to={item.href} 
+                        className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100' 
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        {item.section}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>

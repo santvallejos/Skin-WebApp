@@ -44,7 +44,7 @@ function Home() {
             <AboutUs />
 
 
-                <section id="#ComoComprar" className="body-font bg-[#f2ebd9] rounded-t-3xl">
+                <section id="ComoComprar" className="body-font bg-[#f2ebd9] rounded-t-3xl">
                     <div className="container px-5 pt-3 pb-12 mx-auto">
                         <h1 className="text-[#d41e2b] sm:text-3xl text-4xl title-font text-center mb-12 font-bold text-shadow-lg/20">
                             ¿Como Comprar?
