@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { slugify } from '@/lib/slugify';
-import type { Product } from '@/models/ProductModel';
+import type { ProductModel } from '@/models/ProductModel';
 import { getProductByName, getProductsRandom} from '@/services/ProductsServices';
 import { useCartStore } from '@/store/CartStore';
 import { deslugify } from '@/lib/slugify';
@@ -12,11 +12,11 @@ function Product() {
         addCart
     } = useCartStore();
     const { name: slug } = useParams<{ name: string }>();
-    const [product, setProduct] = useState<Product>();
-    const [productsRandom, setProductsRandom] = useState<Product[]>([]);
+    const [product, setProduct] = useState<ProductModel>();
+    const [productsRandom, setProductsRandom] = useState<ProductModel[]>([]);
     const [hoveredProductId, setHoveredProductId] = useState<string | null>(null);
 
-    const handleAddCart = (product: Product) => {
+    const handleAddCart = (product: ProductModel) => {
         const productToCart = {
             id: product.id,
             name: product.name,

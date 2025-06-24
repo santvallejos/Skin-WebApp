@@ -1,8 +1,8 @@
-import type { Product } from "../models/ProductModel";
+import type { ProductModel } from "../models/ProductModel";
 
 const GITHUB_TOKEN = import.meta.env.VITE_GITHUB_TOKEN; // Token para acceder al json ya que es privado
 
-export const getAllProducts = async (): Promise<Product[]> => {
+export const getAllProducts = async (): Promise<ProductModel[]> => {
     const url = "https://api.github.com/repos/santvallejos/Base-de-datos-JSONs/contents/Skin-WebApp/Products.json?ref=main";
 
     const response = await fetch(url, {
@@ -16,11 +16,11 @@ export const getAllProducts = async (): Promise<Product[]> => {
         throw new Error("Error al obtener los recursos de productos");
     }
 
-    const data: Product[] = await response.json();
+    const data: ProductModel[] = await response.json();
     return data;
 }
 
-export const getFeaturedProducts = async (): Promise<Product[]> => {
+export const getFeaturedProducts = async (): Promise<ProductModel[]> => {
     const url = "https://api.github.com/repos/santvallejos/Base-de-datos-JSONs/contents/Skin-WebApp/FeaturedProducts.json?ref=main";
 
     const response = await fetch(url, {
@@ -34,11 +34,11 @@ export const getFeaturedProducts = async (): Promise<Product[]> => {
         throw new Error("Error al obtener los recursos de productos destacados");
     }
 
-    const data: Product[] = await response.json();
+    const data: ProductModel[] = await response.json();
     return data;
 }
 
-export const getProductById = async (id: string): Promise<Product> => {
+export const getProductById = async (id: string): Promise<ProductModel> => {
     const products = await getAllProducts(); // Obtener todos los productos
     const product = products.find((product) => product.id === id); // Buscar el producto por su id
     if(!product) {
@@ -48,7 +48,7 @@ export const getProductById = async (id: string): Promise<Product> => {
     }
 }
 
-export const getProductByName = async (name: string): Promise<Product> => {
+export const getProductByName = async (name: string): Promise<ProductModel> => {
     const products = await getAllProducts(); // Obtener todos los productos
     const product = products.find((product) => product.name === name); // Buscar el producto por su nombre
     if(!product) {
@@ -58,7 +58,7 @@ export const getProductByName = async (name: string): Promise<Product> => {
     }
 }
 
-export const getProductsRandom = async (): Promise<Product[]> => {
+export const getProductsRandom = async (): Promise<ProductModel[]> => {
     const products = await getAllProducts(); // Obtener todos los productos
     const productsRandom = products.sort(() => Math.random() - 0.5); // Ordenar los productos de forma aleatoria
     return productsRandom.slice(0, 4); // Devolver los 4 primeros productos

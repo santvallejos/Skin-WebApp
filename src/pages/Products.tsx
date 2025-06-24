@@ -8,11 +8,11 @@ import {
 } from "@/components/ui/sheet"
 import { useEffect, useState } from "react";
 import { getAllProducts } from "@/services/ProductsServices";
-import type { Product } from "@/models/ProductModel";
+import type { ProductModel } from "@/models/ProductModel";
 import ListProducts from "@/components/ListProducts";
 
 function Products() {
-    const [products, setProducts] = useState<Product[]>([]);
+    const [products, setProducts] = useState<ProductModel[]>([]);
 
     useEffect(() => {
         const fetchProducts = async () => {

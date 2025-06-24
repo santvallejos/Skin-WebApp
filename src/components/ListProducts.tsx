@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import { slugify } from "@/lib/slugify";
 import { useState } from "react";
-import type { Product } from "@/models/ProductModel";
+import type { ProductModel } from "@/models/ProductModel";
 
 interface ListPorductsProps {
-    products: Product[];    // Productos pasados por props
+    products: ProductModel[];    // Productos pasados por props
 }
 
 function ListProducts({ products }: ListPorductsProps) {

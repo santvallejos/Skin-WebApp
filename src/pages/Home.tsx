@@ -3,11 +3,11 @@ import AboutUs from '../components/AboutUs';
 import AnimatedContent from '@/components/ui/AnimatedContent';
 import { useEffect, useState } from "react";
 import { getFeaturedProducts } from "@/services/ProductsServices";
-import type { Product } from "@/models/ProductModel";
+import type { ProductModel } from "@/models/ProductModel";
 import ListProducts from '@/components/ListProducts';
 
 function Home() {
-    const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+    const [featuredProducts, setFeaturedProducts] = useState<ProductModel[]>([]);
 
     useEffect(() => {
         const fetchFeatureProducts = async () => {
