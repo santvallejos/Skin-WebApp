@@ -1,15 +1,17 @@
 export function slugify(text: string): string {
     return text
+        .toString()
+        // 1) Normaliza acentos (é → e, ü → u, etc.)
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        // 2) A minúsculas y recorta espacios en los extremos
         .toLowerCase()
         .trim()
-        .replace(/\s+/g, '-')           // reemplaza espacios por guiones
-        .replace(/[^\w\-]+/g, '')       // elimina caracteres especiales
-        .replace(/\-\-+/g, '-');        // reemplaza múltiples guiones por uno solo
+        // 3) Espacios y saltos → guión
+        .replace(/\s+/g, '-')
+        // 4) Quita todo lo que no sea letra, número o guión
+        .replace(/[^\w-]+/g, '')
+        // 5) Colapsa 2+ guiones en uno solo
+        .replace(/-+/g, '-')
+        // 6) Quita guiones al inicio/final
+        .replace(/^-+|-+$/g, '');
 }
-
-export function deslugify(slug: string): string {
-    return slug
-      .split('-')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-  }

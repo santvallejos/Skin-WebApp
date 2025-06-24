@@ -4,7 +4,7 @@ import { slugify } from '@/lib/slugify';
 import type { ProductModel } from '@/models/ProductModel';
 import { getProductByName, getProductsRandom} from '@/services/ProductsServices';
 import { useCartStore } from '@/store/CartStore';
-import { deslugify } from '@/lib/slugify';
+import { deslugify } from '@/lib/deslugify';
 import Carousel from '@/components/Carousel';
 
 function Product() {
