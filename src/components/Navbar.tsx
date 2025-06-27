@@ -126,7 +126,7 @@ const Navbar = () => {
                             <a
                               href={item.href}
                               onClick={item.onClick}
-                              className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer'
+                              className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer hover:rounded-2xl'
                             >
                               {item.section}
                             </a>
@@ -134,7 +134,7 @@ const Navbar = () => {
                             <Link
                               to={item.href}
                               onClick={() => handleNavigation()}
-                              className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
+                              className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-2xl'
                             >
                               {item.section}
                             </Link>

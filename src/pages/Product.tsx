@@ -13,6 +13,7 @@ function Product() {
     } = useCartStore();
     const { name: slug } = useParams<{ name: string }>();
     const [product, setProduct] = useState<ProductModel>();
+    const Quantity = useState<number>(1);
     const [productsRandom, setProductsRandom] = useState<ProductModel[]>([]);
     const [hoveredProductId, setHoveredProductId] = useState<string | null>(null);
 
@@ -25,6 +26,16 @@ function Product() {
             model: product.modelsStock[0].model
         }
         addCart(productToCart);
+    }
+
+    const addQuantity = () => {
+        Quantity[1](Quantity[0] + 1);
+    }
+
+    const removeQuantity = () => {
+        if (Quantity[0] > 1) {
+            Quantity[1](Quantity[0] - 1);
+        }
     }
 
     useEffect(() => {
@@ -41,7 +52,7 @@ function Product() {
 
     return (
         <section className='py-16'>
-            <div className='container mx-auto px-4'>
+            <div className='container mx-auto px-4 pb-5'>
                 <div className='flex flex-col lg:flex-row gap-8 items-start'>
                     {/* Carousel Section */}
                     <div className="lg:w-1/2">
@@ -59,8 +70,6 @@ function Product() {
                         {/* Price Section */}
                         <div className="mb-8">
                             <p className="text-4xl font-bold text-indigo-600 mb-2">${product?.price.toFixed(3)}</p>
-                            <p className="text-sm text-gray-500">3 cuotas sin interés de ${product ? (product.price / 3).toFixed(2) : '0'}</p>
-                            <p className="text-sm text-gray-500">15% de descuento pagando con Efectivo/Transferencia</p>
                             <p className="text-sm text-green-600 font-medium mt-2">Envío gratis superando los $35.000</p>
                         </div>
 
@@ -82,12 +91,12 @@ function Product() {
                         {/* Quantity and Add to Cart */}
                         <div className="flex items-center gap-4 mb-6">
                             <div className="flex items-center border border-gray-300 rounded">
-                                <button className="px-3 py-2 hover:bg-gray-100">-</button>
-                                <span className="px-4 py-2 border-x border-gray-300">1</span>
-                                <button className="px-3 py-2 hover:bg-gray-100">+</button>
+                                <button className="px-3 py-2 hover:bg-gray-100" onClick={removeQuantity}>-</button>
+                                <span className="px-4 py-2 border-x border-gray-300">{Quantity[0]}</span>
+                                <button className="px-3 py-2 hover:bg-gray-100" onClick={addQuantity}>+</button>
                             </div>
                             <button
-                                className="flex-1 bg-black text-white py-3 px-6 rounded font-medium hover:bg-gray-800 transition-colors"
+                                className="flex-1 bg-red-500 text-white py-3 px-6 rounded font-medium hover:bg-red-600 transition-colors"
                                 onClick={() => product && handleAddCart(product)}
                             >
                                 Agregar al carrito
@@ -103,6 +112,9 @@ function Product() {
                     </div>
                 </div>
             </div>
+
+
+            <h2 className='text-4xl font-bold text-[#d41e2b] text-center text-shadow-lg/20'>Otras fundas</h2>
 
             <ul className="flex flex-col gap-4 justify-center items-center">
                 <li className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
