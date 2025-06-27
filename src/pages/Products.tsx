@@ -1,7 +1,6 @@
 import {
     Sheet,
     SheetContent,
-    SheetDescription,
     SheetHeader,
     SheetTitle,
     SheetTrigger,
@@ -38,11 +37,12 @@ function Products() {
                         </SheetTrigger>
                         <SheetContent>
                             <SheetHeader>
-                                <SheetTitle>Are you absolutely sure?</SheetTitle>
-                                <SheetDescription>
-                                    This action cannot be undone. This will permanently delete your account
-                                    and remove your data from our servers.
-                                </SheetDescription>
+                                <SheetTitle>Ordenar Por:</SheetTitle>
+                                <select name="order" id="">
+                                    <option value="price">Precio</option>
+                                    <option value="name">Nombre</option>
+                                </select>
+
                             </SheetHeader>
                         </SheetContent>
                     </Sheet>
