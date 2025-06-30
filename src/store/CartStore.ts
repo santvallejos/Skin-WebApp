@@ -6,7 +6,7 @@ interface cartStore {
     items: CartItem[]; // Lista de productos en el carrito
 
     // Funciones para manipular el carrito
-    addCart: (product: ProductToCart) => void;                 // Agregar un producto al carrito
+    addCart: (product: ProductToCart, quantity: number) => void;                 // Agregar un producto al carrito
     removeCart: (id: string) => void;                          // Remover un producto del carrito
     updateQuantity: (id: string, quantity: number) => void;    // Actualizar la cantidad de un producto en el carrito
     clearCart: () => void;                                     // Limpiar el carrito
@@ -20,7 +20,7 @@ export const useCartStore = create<cartStore>((set, get) => ({
     // inicializar variables
     items: [],
 
-    addCart: (product: ProductToCart) => {
+    addCart: (product: ProductToCart, quantity: number) => {
         // evaluar si el producto ya esta en el carrito
         const productInCart = useCartStore.getState().items.find((item) => item.product.id === product.id);
         if (productInCart) {
@@ -30,7 +30,7 @@ export const useCartStore = create<cartStore>((set, get) => ({
                     if (item.product.id === product.id) {
                         return {
                             ...item,
-                            quantity: item.quantity + 1
+                            quantity: item.quantity + quantity
                         }
                     }
                     return item;
@@ -39,7 +39,7 @@ export const useCartStore = create<cartStore>((set, get) => ({
         } else {
             // Si el producto no esta en el carrito, agregarlo
             set((state) => ({
-                items: [...state.items, { product, quantity: 1 }]
+                items: [...state.items, { product, quantity }]
             }))
         }
     },

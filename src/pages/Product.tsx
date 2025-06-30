@@ -16,6 +16,7 @@ function Product() {
     const Quantity = useState<number>(1);
     const [productsRandom, setProductsRandom] = useState<ProductModel[]>([]);
     const [hoveredProductId, setHoveredProductId] = useState<string | null>(null);
+    const [selectModel, setSelectModel] = useState<string>('');
 
     const handleAddCart = (product: ProductModel) => {
         const productToCart = {
@@ -23,9 +24,9 @@ function Product() {
             name: product.name,
             images: product.images,
             price: product.price,
-            model: product.modelsStock[0].model
+            model: selectModel || product.modelsStock[0].model
         }
-        addCart(productToCart);
+        addCart(productToCart, Quantity[0]);
     }
 
     const addQuantity = () => {
@@ -38,11 +39,20 @@ function Product() {
         }
     }
 
+    const handleSelectModel = (model: string) => {
+        setSelectModel(model);
+    }
+
     useEffect(() => {
         const nameOriginal = slug ? deslugify(slug) : '';
         if (nameOriginal) {
             getProductByName(nameOriginal).then((product) => {
                 setProduct(product);
+                // Seleccionar el primer modelo con stock disponible
+                const firstAvailableModel = product.modelsStock.find(model => model.stock > 0);
+                if (firstAvailableModel) {
+                    setSelectModel(firstAvailableModel.model);
+                }
             })
             getProductsRandom().then((products) => {
                 setProductsRandom(products);
@@ -69,7 +79,7 @@ function Product() {
 
                         {/* Price Section */}
                         <div className="mb-8">
-                            <p className="text-4xl font-bold text-indigo-600 mb-2">${product?.price.toFixed(3)}</p>
+                            <p className="text-4xl font-bold mb-2">${product?.price.toFixed(3)}</p>
                             <p className="text-sm text-green-600 font-medium mt-2">Envío gratis superando los $35.000</p>
                         </div>
 
@@ -80,9 +90,23 @@ function Product() {
                                 {product?.modelsStock.map((variant, idx) => (
                                     <button
                                         key={idx}
-                                        className="px-3 py-2 border border-gray-300 rounded text-sm hover:border-indigo-500 transition-colors"
+                                        className={`px-3 py-2 border rounded text-sm transition-colors ${
+                                            variant.stock === 0 
+                                                ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed' 
+                                                : selectModel === variant.model
+                                                ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
+                                                : 'border-gray-300 hover:border-indigo-500'
+                                        }`}
+                                        disabled={variant.stock === 0}
+                                        onClick={() => variant.stock > 0 && handleSelectModel(variant.model)}
                                     >
                                         {variant.model}
+                                        {variant.stock === 0 && (
+                                            <span className="block text-xs mt-1">Sin stock</span>
+                                        )}
+                                        {selectModel === variant.model && variant.stock > 0 && (
+                                            <span className="block text-xs mt-1 text-indigo-600">Seleccionado</span>
+                                        )}
                                     </button>
                                 ))}
                             </div>
