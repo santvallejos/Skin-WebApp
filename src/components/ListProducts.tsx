@@ -1,19 +1,45 @@
 import { Link } from "react-router-dom";
 import { slugify } from "@/lib/slugify";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { ProductModel } from "@/models/ProductModel";
+import { useProductStore } from "@/store/ProductsStore";
 
 interface ListPorductsProps {
     products: ProductModel[];    // Productos pasados por props
 }
 
 function ListProducts({ products }: ListPorductsProps) {
+    const {
+        orderFor
+    } = useProductStore();
     const [hoveredProductId, setHoveredProductId] = useState<string | null>(null);
+
+    // Ordenar los productos
+    const sortProducts = useMemo(() => {
+        if (!products) return [];
+
+        return [...products].sort((a, b) => {
+            switch(orderFor){
+                case 'highlight':
+                    return 0;
+                case 'priceMin':
+                    return a.price - b.price;
+                case 'priceMax':
+                    return b.price - a.price;
+                case 'az':
+                    return a.name.localeCompare(b.name);
+                case 'za':
+                    return b.name.localeCompare(a.name);
+                default:
+                    return 0;
+            }
+        })
+    }, [products, orderFor]);
 
     return (
         <div className="p-5">
             <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {products.map((product) => (
+                {sortProducts.map((product) => (
                     <li
                         key={product.id}
                         className="flex flex-col bg-[#191919] rounded-2xl border border-neutral-400 shadow-2xl overflow-hidden"

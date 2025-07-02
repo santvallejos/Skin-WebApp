@@ -1,0 +1,83 @@
+import {
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from "@/components/ui/sheet"
+import { Checkbox } from "@/components/ui/checkbox";
+import { useProductStore } from "@/store/ProductsStore";
+import type { sort } from "@/store/ProductsStore";
+
+const modelsCases = {
+    iPhone11: "iPhone 11",
+    iPhone12: "iPhone 12",
+    iPhone12Pro: "iPhone 12 Pro",
+    iPhone12ProMax: "iPhone 12 Pro Max",
+    iPhone13: "iPhone 13",
+    iPhone13Pro: "iPhone 13 Pro",
+    iPhone13ProMax: "iPhone 13 Pro Max",
+    iPhone14: "iPhone 14",
+    iPhone14Pro: "iPhone 14 Pro",
+    iPhone14ProMax: "iPhone 14 Pro Max",
+    iPhone15: "iPhone 15",
+    iPhone15Pro: "iPhone 15 Pro",
+    iPhone15ProMax: "iPhone 15 Pro Max",
+    iPhone16: "iPhone 16",
+    iPhone16Pro: "iPhone 16 Pro",
+    iPhone16ProMax: "iPhone 16 Pro Max",
+}
+
+function Filters() {
+    const {
+        orderFor,
+        setOrderFor
+    } = useProductStore();
+
+    const handleOrderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setOrderFor(e.target.value as sort);
+    };
+
+    return(
+        <>
+            <div>
+                <Sheet>
+                    <SheetTrigger className="p-2 inset-shadow-sm rounded-2xl shadow-xl">
+                        <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#d41e2b"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  className="icon icon-tabler icons-tabler-outline icon-tabler-adjustments-horizontal"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 6m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M4 6l8 0" /><path d="M16 6l4 0" /><path d="M8 12m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M4 12l2 0" /><path d="M10 12l10 0" /><path d="M17 18m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M4 18l11 0" /><path d="M19 18l1 0" /></svg>
+                    </SheetTrigger>
+                    <SheetContent>
+                        <SheetHeader>
+                                <SheetTitle className="pt-4">Ordenar Por:</SheetTitle>
+                                <select
+                                    value={orderFor}
+                                    name="order" 
+                                     className="select select-bordered border border-black p-1 rounded-lg" 
+                                    onChange={handleOrderChange}>
+                                    <option value="highlight">Destacados</option>
+                                    <option value="priceMax">Precio: mayor a menor</option>
+                                    <option value="priceMin">Precio: menor a mayor</option>
+                                    <option value="az">A - Z</option>
+                                    <option value="za">Z - A</option>
+                                </select>
+
+                                <SheetTitle className="pt-4">Modelo</SheetTitle>
+                                <div className="grid grid-cols-2">
+                                        {Object.entries(modelsCases).map(([key, value]) => (
+                                            <div className="flex items-center gap-2">
+                                                <Checkbox id={key} />
+                                                <label htmlFor={key}>{value}</label>
+                                            </div>
+                                        ))}
+                                </div>
+
+                                <SheetTitle className="pt-4">Precio</SheetTitle>
+                                <input type="range" className="range range-primary " />
+                            </SheetHeader>
+                        </SheetContent>
+                    </Sheet>
+            </div>
+        </>
+    )
+}
+
+export default Filters;
