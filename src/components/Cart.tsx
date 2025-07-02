@@ -83,7 +83,7 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
                         <div className="flex items-center justify-between mt-3">
                           <div className="flex items-center space-x-3">
                             <button
-                              onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
                               className="w-8 h-8 rounded-full bg-white border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                               aria-label="Disminuir cantidad"
                             >
@@ -91,7 +91,7 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
                             </button>
                             <span className="text-sm font-semibold min-w-[2rem] text-center">{item.quantity}</span>
                             <button
-                              onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
                               className="w-8 h-8 rounded-full bg-white border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                               aria-label="Aumentar cantidad"
                             >
@@ -99,9 +99,9 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
                             </button>
                           </div>
                           
-                          {/* Botón eliminar mejorado */}
+                          {/* Botón eliminar */}
                           <button
-                            onClick={() => handleRemoveItemCart(item.product.id)}
+                            onClick={() => handleRemoveItemCart(item.id)}
                             className="px-3 py-1 text-xs font-medium text-red-600 bg-red-50 border border-red-200 rounded-md hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
                             aria-label={`Eliminar ${item.product.name}`}
                           >

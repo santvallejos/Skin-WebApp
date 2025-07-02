@@ -7,13 +7,13 @@ interface cartStore {
 
     // Funciones para manipular el carrito
     addCart: (product: ProductToCart, quantity: number) => void;                 // Agregar un producto al carrito
-    removeCart: (id: string) => void;                          // Remover un producto del carrito
-    updateQuantity: (id: string, quantity: number) => void;    // Actualizar la cantidad de un producto en el carrito
-    clearCart: () => void;                                     // Limpiar el carrito
+    removeCart: (id: string) => void;                                            // Remover un producto del carrito
+    updateQuantity: (id: string, quantity: number) => void;                      // Actualizar la cantidad de un producto en el carrito
+    clearCart: () => void;                                                       // Limpiar el carrito
 
     // Getters
-    getSubtotal: (id: string) => number;
-    getTotal: () => number;
+    getSubtotal: (id: string) => number;                                         // Subtotal de un producto
+    getTotal: () => number;                                                      // Total del carrito
 }
 
 export const useCartStore = create<cartStore>((set, get) => ({
@@ -21,13 +21,14 @@ export const useCartStore = create<cartStore>((set, get) => ({
     items: [],
 
     addCart: (product: ProductToCart, quantity: number) => {
-        // evaluar si el producto ya esta en el carrito
-        const productInCart = useCartStore.getState().items.find((item) => item.product.id === product.id);
-        if (productInCart) {
+        // evaluar si el producto del mismo modelo ya esta en el carrito
+        const productInCar = useCartStore.getState().items.find((item) => item.product.id === product.id && item.product.model === product.model);
+
+        if (productInCar) {
             // Si el producto ya esta en el carrito, aumentar la cantidad
             set((state) => ({
                 items: state.items.map((item) => {
-                    if (item.product.id === product.id) {
+                    if (item.product.id === product.id && item.product.model === product.model) {
                         return {
                             ...item,
                             quantity: item.quantity + quantity
@@ -39,34 +40,36 @@ export const useCartStore = create<cartStore>((set, get) => ({
         } else {
             // Si el producto no esta en el carrito, agregarlo
             set((state) => ({
-                items: [...state.items, { product, quantity }]
+                items: [ { id: crypto.randomUUID(), product, quantity }, ...state.items ]
             }))
         }
     },
-    removeCart: (productId: string) => {
-        // evaluamos si el producto esta en el carrito
-        const productInCart = useCartStore.getState().items.find((item) => item.product.id === productId);
-        if (productInCart) {
+    removeCart: (itemCartId: string) => {
+        // Evaluamos si el producto esta en el carrito
+        const itemInCart = get().items.find((item) => item.id === itemCartId);
+
+        if (itemInCart) {
             // Si el producto esta en el carrito, lo eliminamos, tambien sus cantidades
             set((state) => ({
-                items: state.items.filter((item) => item.product.id !== productId)
+                items: state.items.filter((item) => item.id !== itemCartId)
             }))
         } else {
             // Si el producto no esta en el carrito, no hacemos nada
             return;
         }
     },
-    updateQuantity: (productId: string, quantity: number) => {
-        // evaluamos si el producto esta en el carrito
-        const productInCart = useCartStore.getState().items.find((item) => item.product.id === productId);
-        if (productInCart) {
+    updateQuantity: (itemCartId: string, quantity: number) => {
+        // Evaluamos si el producto esta en el carrito
+        const itemInCart = get().items.find((item) => item.id === itemCartId);
+
+        if (itemInCart) {
             // Si el producto esta en el carrito, evaluamos su cantidad y la actualizamos, ya que no puede pasar que la cantidad sea menor a 1
             if (quantity < 1) {
                 return;
             }
             set((state) => ({
                 items: state.items.map((item) => {
-                    if (item.product.id === productId) {
+                    if (item.id === itemCartId) {
                         return {
                             ...item,
                             quantity: quantity
@@ -75,6 +78,9 @@ export const useCartStore = create<cartStore>((set, get) => ({
                     return item;
                 })
             }))
+        } else {
+            // Si el producto no esta en el carrito, no hacemos nada
+            return;
         }
     },
     clearCart: () => {
