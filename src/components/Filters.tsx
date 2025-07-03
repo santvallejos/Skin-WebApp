@@ -8,6 +8,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { useProductStore } from "@/store/ProductsStore";
 import type { sort } from "@/store/ProductsStore";
+import { useState } from 'react';
 
 const modelsCases = {
     iPhone11: "iPhone 11",
@@ -31,11 +32,25 @@ const modelsCases = {
 function Filters() {
     const {
         orderFor,
-        setOrderFor
+        setOrderFor,
+        models,
+        setModels,
     } = useProductStore();
+    const [isExpanded, setIsExpanded] = useState(false); // Efecto de expandir la lista de modelos
+    
 
+    // Cambiar el ordenamiento
     const handleOrderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setOrderFor(e.target.value as sort);
+    };
+
+    // Filtrar por modelo
+    const handleModelChange = (model: string) => {
+        if(!models.includes(model)){
+            setModels([...models, model]);
+        }else{
+            setModels(models.filter((m) => m !== model));
+        }
     };
 
     return(
@@ -49,7 +64,7 @@ function Filters() {
                         <SheetHeader>
                                 <SheetTitle className="pt-4">Ordenar Por:</SheetTitle>
                                 <select
-                                    value={orderFor}
+                                    value={orderFor} // Valor actual de ordenamiento
                                     name="order" 
                                      className="select select-bordered border border-black p-1 rounded-lg" 
                                     onChange={handleOrderChange}>
@@ -61,17 +76,39 @@ function Filters() {
                                 </select>
 
                                 <SheetTitle className="pt-4">Modelo</SheetTitle>
-                                <div className="grid grid-cols-2">
-                                        {Object.entries(modelsCases).map(([key, value]) => (
-                                            <div className="flex items-center gap-2">
-                                                <Checkbox id={key} />
-                                                <label htmlFor={key}>{value}</label>
-                                            </div>
-                                        ))}
+                                <div className="flex flex-col gap-2">
+                                {Object.entries(modelsCases)
+                                .slice(0, isExpanded ? Object.entries(modelsCases).length : 5)
+                                .map(([value]) => (
+                                    <div key={value} className="flex items-center gap-2">
+                                        <Checkbox 
+                                            id={value}
+                                            checked={models.includes(value)}
+                                            onCheckedChange={() => handleModelChange(value)}
+                                        />
+                                        <label htmlFor={value}>{value}</label>
+                                    </div>
+                                ))}
+                                    {Object.entries(modelsCases).length > 5 && (
+                                        <button
+                                            className="text-blue-500 mt-2 text-left"
+                                            onClick={() => setIsExpanded(!isExpanded)}
+                                        >
+                                            {isExpanded ? 'Ver menos' : 'Ver más'}
+                                        </button>
+                                    )}
                                 </div>
-
-                                <SheetTitle className="pt-4">Precio</SheetTitle>
-                                <input type="range" className="range range-primary " />
+{/* 
+                                <SheetTitle className="pt-4">Precio Máximo</SheetTitle>
+                                <input 
+                                    type="range" 
+                                    className="range range-primary w-full" 
+                                    onChange={handlePriceChange}
+                                    min={0}
+                                    max={20000}
+                                    value={priceRange}
+                                />
+                                <span>{priceRange}</span> */}
                             </SheetHeader>
                         </SheetContent>
                     </Sheet>
