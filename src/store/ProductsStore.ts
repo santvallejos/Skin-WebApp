@@ -5,23 +5,26 @@ export type sort = 'highlight' | 'priceMin' | 'priceMax' | 'az' | 'za'; // Opcio
 
 interface productStore {
     products: ProductModel[];
-    search: string;
-    priceRange: number;
+    //search: string;
+    minPrice: number;
+    maxPrice: number;
     models: string[];
     orderFor: sort; // Ordenar Por
 
     setProducts: (productos: ProductModel[]) => void;       // Lista de productos
     setOrderFor: (option: sort) => void;                    // Ordenar Por
-    setSearch: (search: string) => void;
-    setPriceRange: (priceRange: number) => void;
-    setModels: (models: string[]) => void;
+    //setSearch: (search: string) => void;                  // Buscar por nombre
+    setMinPrice: (minPrice: number) => void;                // Rango de precio minimo
+    setMaxPrice: (maxPrice: number) => void;                // Rango de precio maximo
+    setModels: (models: string[]) => void;                  // Modelos
 }
 
 export const useProductStore = create<productStore>((set) => ({
     // Inicializacion de variables
     products: [],
-    search: '',
-    priceRange: Infinity,
+    //search: '',
+    minPrice: 0,
+    maxPrice: 20000,
     models: [],
     orderFor: 'highlight', // Predeterminado
     setProducts: (products: ProductModel[]) => {
@@ -30,14 +33,16 @@ export const useProductStore = create<productStore>((set) => ({
     setOrderFor: (option: sort) => {
         set({ orderFor: option});
     },
-    setSearch: (search: string) => {
+/*     setSearch: (search: string) => {
         set({ search });
+    }, */
+    setMinPrice: (minPrice: number) => {
+        set({ minPrice });
     },
-    setPriceRange: (priceRange: number) => {
-        set({ priceRange });
+    setMaxPrice: (maxPrice: number) => {
+        set({ maxPrice });
     },
     setModels: (models: string[]) => {
         set({ models });
-        console.log(models);
     }
 }))

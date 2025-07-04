@@ -10,24 +10,24 @@ import { useProductStore } from "@/store/ProductsStore";
 import type { sort } from "@/store/ProductsStore";
 import { useState } from 'react';
 
-const modelsCases = {
-    iPhone11: "iPhone 11",
-    iPhone12: "iPhone 12",
-    iPhone12Pro: "iPhone 12 Pro",
-    iPhone12ProMax: "iPhone 12 Pro Max",
-    iPhone13: "iPhone 13",
-    iPhone13Pro: "iPhone 13 Pro",
-    iPhone13ProMax: "iPhone 13 Pro Max",
-    iPhone14: "iPhone 14",
-    iPhone14Pro: "iPhone 14 Pro",
-    iPhone14ProMax: "iPhone 14 Pro Max",
-    iPhone15: "iPhone 15",
-    iPhone15Pro: "iPhone 15 Pro",
-    iPhone15ProMax: "iPhone 15 Pro Max",
-    iPhone16: "iPhone 16",
-    iPhone16Pro: "iPhone 16 Pro",
-    iPhone16ProMax: "iPhone 16 Pro Max",
-}
+const modelsCases = [
+    "iPhone 11",
+    "iPhone 12",
+    "iPhone 12 Pro",
+    "iPhone 12 Pro Max",
+    "iPhone 13",
+    "iPhone 13 Pro",
+    "iPhone 13 Pro Max",
+    "iPhone 14",
+    "iPhone 14 Pro",
+    "iPhone 14 Pro Max",
+    "iPhone 15",
+    "iPhone 15 Pro",
+    "iPhone 15 Pro Max",
+    "iPhone 16",
+    "iPhone 16 Pro",
+    "iPhone 16 Pro Max",
+]
 
 function Filters() {
     const {
@@ -77,9 +77,9 @@ function Filters() {
 
                                 <SheetTitle className="pt-4">Modelo</SheetTitle>
                                 <div className="flex flex-col gap-2">
-                                {Object.entries(modelsCases)
-                                .slice(0, isExpanded ? Object.entries(modelsCases).length : 5)
-                                .map(([value]) => (
+                                {modelsCases
+                                .slice(0, isExpanded ? modelsCases.length : 5)
+                                .map((value) => (
                                     <div key={value} className="flex items-center gap-2">
                                         <Checkbox 
                                             id={value}
@@ -89,7 +89,7 @@ function Filters() {
                                         <label htmlFor={value}>{value}</label>
                                     </div>
                                 ))}
-                                    {Object.entries(modelsCases).length > 5 && (
+                                    {modelsCases.length > 5 && (
                                         <button
                                             className="text-blue-500 mt-2 text-left"
                                             onClick={() => setIsExpanded(!isExpanded)}
@@ -98,17 +98,19 @@ function Filters() {
                                         </button>
                                     )}
                                 </div>
-{/* 
-                                <SheetTitle className="pt-4">Precio Máximo</SheetTitle>
-                                <input 
-                                    type="range" 
-                                    className="range range-primary w-full" 
-                                    onChange={handlePriceChange}
-                                    min={0}
-                                    max={20000}
-                                    value={priceRange}
-                                />
-                                <span>{priceRange}</span> */}
+
+{/*                                 <SheetTitle className="pt-4">Precio Máximo:</SheetTitle>
+                                <div className="flex items-center gap-2">
+                                    <input 
+                                        type="range" 
+                                        className="range range-primary w-full" 
+                                        onChange={handlePriceChange}
+                                        min={0}
+                                        max={20000}
+                                        value={priceRange}
+                                    />
+                                    <span>{priceRange}</span>
+                                </div> */}
                             </SheetHeader>
                         </SheetContent>
                     </Sheet>

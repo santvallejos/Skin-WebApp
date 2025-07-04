@@ -12,37 +12,13 @@ function Products() {
         setProducts
     } = useProductStore();
 
-    // Ordenar los productos
-/*     const sortProducts = useMemo(() => {
-        if (!products) return [];
-
-        return [...products].sort((a, b) => {
-            switch(orderFor){
-                case 'highlight':
-                    return 0;
-                case 'priceMin':
-                    return a.price - b.price;
-                case 'priceMax':
-                    return b.price - a.price;
-                case 'az':
-                    return a.name.localeCompare(b.name);
-                case 'za':
-                    return b.name.localeCompare(a.name);
-                default:
-                    return 0;
-            }
-        })
-    }, [products, orderFor]); */
-
     // Aplicar filtros y ordenamiento
     const filteredProducts = useMemo(() => {
         if (!products) return [];
 
         return [...products].filter(product => {
-            const matchesModels = models.length === 0 || 
-                product.modelsStock.some(variant => 
-                    models.includes(variant.model) && variant.stock > 0
-                );
+            const matchesModels = models.length === 0 || product.modelsStock.some(variant => models.includes(variant.model) && variant.stock > 0);
+
             return matchesModels;
         }).sort((a, b) => {
             switch(orderFor){

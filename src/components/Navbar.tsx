@@ -76,7 +76,7 @@ const Navbar = () => {
     e.preventDefault();
     setIsSheetOpen(false); // Cerrar el Sheet al realizar búsqueda
     // Implementar lógica de búsqueda aquí
-    console.log('Buscando:', searchQuery);
+    setSearchQuery('');
   };
 
   return (
