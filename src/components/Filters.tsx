@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useProductStore } from "@/store/ProductsStore";
 import type { sort } from "@/store/ProductsStore";
 import { useState } from 'react';
+import { Button } from "@/components/ui/button";
 
 const modelsCases = [
     "iPhone 11",
@@ -37,6 +38,7 @@ function Filters() {
         setModels,
         maxPrice,
         setMaxPrice,
+        clearFilters
     } = useProductStore();
     const [isExpanded, setIsExpanded] = useState(false); // Efecto de expandir la lista de modelos
     
@@ -63,7 +65,7 @@ function Filters() {
         <>
             <div>
                 <Sheet>
-                    <SheetTrigger className="p-2 inset-shadow-sm rounded-2xl shadow-xl">
+                    <SheetTrigger className="p-2 inset-shadow-sm rounded-2xl shadow-xl cursor-pointer">
                         <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#d41e2b"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  className="icon icon-tabler icons-tabler-outline icon-tabler-adjustments-horizontal"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 6m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M4 6l8 0" /><path d="M16 6l4 0" /><path d="M8 12m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M4 12l2 0" /><path d="M10 12l10 0" /><path d="M17 18m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M4 18l11 0" /><path d="M19 18l1 0" /></svg>
                     </SheetTrigger>
                     <SheetContent>
@@ -72,7 +74,7 @@ function Filters() {
                                 <select
                                     value={orderFor} // Valor actual de ordenamiento
                                     name="order" 
-                                     className="select select-bordered border border-black p-1 rounded-lg" 
+                                     className="select select-bordered border border-black p-1 rounded-lg cursor-pointer" 
                                     onChange={handleOrderChange}>
                                     <option value="highlight">Destacados</option>
                                     <option value="priceMax">Precio: mayor a menor</option>
@@ -87,7 +89,8 @@ function Filters() {
                                 .slice(0, isExpanded ? modelsCases.length : 5)
                                 .map((value) => (
                                     <div key={value} className="flex items-center gap-2">
-                                        <Checkbox 
+                                        <Checkbox
+                                            className="cursor-pointer" 
                                             id={value}
                                             checked={models.includes(value)}
                                             onCheckedChange={() => handleModelChange(value)}
@@ -97,7 +100,7 @@ function Filters() {
                                 ))}
                                     {modelsCases.length > 5 && (
                                         <button
-                                            className="text-blue-500 mt-2 text-left"
+                                            className="text-blue-500 mt-2 text-left cursor-pointer"
                                             onClick={() => setIsExpanded(!isExpanded)}
                                         >
                                             {isExpanded ? 'Ver menos' : 'Ver más'}
@@ -109,7 +112,7 @@ function Filters() {
                                 <div className="flex items-center gap-2">
                                     <input 
                                         type="range" 
-                                        className="range range-primary w-full" 
+                                        className="range range-primary w-full cursor-pointer" 
                                         onChange={handlePriceChange}
                                         min={0}
                                         max={20000}
@@ -117,6 +120,13 @@ function Filters() {
                                     />
                                     <span>{maxPrice}</span>
                                 </div>
+                                <Button
+                                    className="btn btn-primary hover:bg-red-500 w-28 cursor-pointer"
+                                    onClick={clearFilters}
+                                    variant="destructive"
+                                >
+                                    Limpiar Filtros
+                                </Button>
                             </SheetHeader>
                         </SheetContent>
                     </Sheet>

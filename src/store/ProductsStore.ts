@@ -17,6 +17,7 @@ interface productStore {
     setMinPrice: (minPrice: number) => void;                // Rango de precio minimo
     setMaxPrice: (maxPrice: number) => void;                // Rango de precio maximo
     setModels: (models: string[]) => void;                  // Modelos
+    clearFilters: () => void;
 }
 
 export const useProductStore = create<productStore>((set) => ({
@@ -44,5 +45,8 @@ export const useProductStore = create<productStore>((set) => ({
     },
     setModels: (models: string[]) => {
         set({ models });
+    },
+    clearFilters: () => {
+        set({ minPrice: 0, maxPrice: 20000, models: [], orderFor: 'highlight' });
     }
 }))

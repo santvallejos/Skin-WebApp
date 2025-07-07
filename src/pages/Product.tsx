@@ -180,7 +180,7 @@ function Product() {
                             </div>
                             <div className="flex flex-col items-center gap-2">
                                 <h3 className="text-lg font-bold text-white">{product.name}</h3>
-                                <p className="text-lg text-white">${product.price.toFixed(3)}</p>
+                                <p className="text-lg text-white">${product.price}</p>
                             </div>
                         </Link>
                     </div>
