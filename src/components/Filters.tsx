@@ -35,6 +35,8 @@ function Filters() {
         setOrderFor,
         models,
         setModels,
+        maxPrice,
+        setMaxPrice,
     } = useProductStore();
     const [isExpanded, setIsExpanded] = useState(false); // Efecto de expandir la lista de modelos
     
@@ -51,6 +53,10 @@ function Filters() {
         }else{
             setModels(models.filter((m) => m !== model));
         }
+    };
+
+    const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setMaxPrice(parseInt(e.target.value));
     };
 
     return(
@@ -99,7 +105,7 @@ function Filters() {
                                     )}
                                 </div>
 
-{/*                                 <SheetTitle className="pt-4">Precio Máximo:</SheetTitle>
+                                <SheetTitle className="pt-4">Precio Máximo:</SheetTitle>
                                 <div className="flex items-center gap-2">
                                     <input 
                                         type="range" 
@@ -107,10 +113,10 @@ function Filters() {
                                         onChange={handlePriceChange}
                                         min={0}
                                         max={20000}
-                                        value={priceRange}
+                                        value={maxPrice}
                                     />
-                                    <span>{priceRange}</span>
-                                </div> */}
+                                    <span>{maxPrice}</span>
+                                </div>
                             </SheetHeader>
                         </SheetContent>
                     </Sheet>

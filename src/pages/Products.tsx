@@ -9,6 +9,8 @@ function Products() {
         products,
         orderFor,
         models,
+        minPrice,
+        maxPrice,
         setProducts
     } = useProductStore();
 
@@ -18,8 +20,9 @@ function Products() {
 
         return [...products].filter(product => {
             const matchesModels = models.length === 0 || product.modelsStock.some(variant => models.includes(variant.model) && variant.stock > 0);
+            const matchesPrice = (minPrice === 0 && maxPrice === 0) || (product.price >= minPrice && product.price <= maxPrice);
 
-            return matchesModels;
+            return matchesModels && matchesPrice;
         }).sort((a, b) => {
             switch(orderFor){
                 case 'highlight':
@@ -36,7 +39,7 @@ function Products() {
                     return 0;
             }
         })
-    }, [products, models, orderFor]);
+    }, [products, models, minPrice, maxPrice, orderFor]);
 
     useEffect(() => {
         const fetchProducts = async () => {

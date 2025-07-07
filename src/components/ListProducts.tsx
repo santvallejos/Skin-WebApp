@@ -53,7 +53,7 @@ function ListProducts({ products }: ListPorductsProps) {
                                     {product.name}
                                 </h3>
                                 <p className="text-lg text-white">
-                                    ${product.price.toFixed(3)}
+                                    ${product.price}
                                 </p>
                             </div>
                         </Link>

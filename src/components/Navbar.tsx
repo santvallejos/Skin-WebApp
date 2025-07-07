@@ -21,7 +21,7 @@ const Navbar = () => {
   // Estados para controlar la visibilidad de los menús laterales
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  //const [searchQuery, setSearchQuery] = useState('');
 
   // Función para manejar el scroll a la sección ComoComprar
   const handleComoComprarClick = (e: React.MouseEvent) => {
@@ -72,12 +72,12 @@ const Navbar = () => {
   ];
 
   // Función para manejar la búsqueda
-  const handleSearch = (e: React.FormEvent) => {
+/*   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSheetOpen(false); // Cerrar el Sheet al realizar búsqueda
     // Implementar lógica de búsqueda aquí
     setSearchQuery('');
-  };
+  }; */
 
   return (
     <>
@@ -100,7 +100,7 @@ const Navbar = () => {
                     </SheetTitle>
 
                     {/* Formulario de búsqueda dentro del menú (visible solo en pantallas pequeñas) */}
-                    <div className="p-2">
+{/*                     <div className="p-2">
                       <form onSubmit={handleSearch}>
                         <div className="relative">
                           <input
@@ -117,7 +117,7 @@ const Navbar = () => {
                           </div>
                         </div>
                       </form>
-                    </div>
+                    </div> */}
 
                     <ul className="space-y-4">
                       {itemsMenu.map((item) => (
