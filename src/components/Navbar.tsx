@@ -95,7 +95,7 @@ const Navbar = () => {
                 </SheetTrigger>
                 <SheetContent side='left'>
                   <SheetHeader>
-                    <SheetTitle>
+                    <SheetTitle className='text-xl font-bold pb-3'>
                       Menú
                     </SheetTitle>
 

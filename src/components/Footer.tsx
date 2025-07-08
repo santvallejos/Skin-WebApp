@@ -2,8 +2,8 @@ function Footer() {
     return (
         <footer className="text-gray-600 body-font bg-white">
             <div className="container px-5 py-8 mx-auto flex items-center sm:flex-row flex-col">
-                <a className="flex title-font font-medium items-center md:justify-start justify-center text-gray-900">
-                    <img src="LogoNavbar.png" alt="" className="w-full h-10"/>
+                <a className="flex title-font font-medium items-center md:justify-start justify-center text-gray-900" href="https://www.instagram.com/skin.cts/" target="_blank">
+                    <img src="LogoNavbar.png" alt="" className="w-36 h-10"/>
                 </a>
                 <p className="text-sm text-gray-500 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-200 sm:py-2 sm:mt-0 mt-4">© 2025 Skin —
                     <a href="https://www.instagram.com/skin.cts/" className="text-gray-600 ml-1" rel="noopener noreferrer" target="_blank">@skin.cts</a>
