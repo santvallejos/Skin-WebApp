@@ -114,7 +114,7 @@ function Filters() {
                                         type="range" 
                                         className="range range-primary w-full cursor-pointer" 
                                         onChange={handlePriceChange}
-                                        min={0}
+                                        min={1}
                                         max={20000}
                                         value={maxPrice}
                                     />

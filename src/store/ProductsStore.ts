@@ -24,7 +24,7 @@ export const useProductStore = create<productStore>((set) => ({
     // Inicializacion de variables
     products: [],
     //search: '',
-    minPrice: 0,
+    minPrice: 1,
     maxPrice: 20000,
     models: [],
     orderFor: 'highlight', // Predeterminado

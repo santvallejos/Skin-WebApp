@@ -11,7 +11,8 @@ function Products() {
         models,
         minPrice,
         maxPrice,
-        setProducts
+        setProducts,
+        clearFilters
     } = useProductStore();
 
     // Aplicar filtros y ordenamiento
@@ -55,13 +56,34 @@ function Products() {
     }, [setProducts]);
 
     return (
-        <section className="flex flex-col p-3">
-            <div className="flex justify-between">
-                <h2 className="text-5xl font-bold text-shadow-lg/20">Productos</h2>
+        <section className="flex flex-col p-4 md:p-6">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
+                <h2 className="text-3xl md:text-5xl font-bold text-gray-900">Productos</h2>
                 <Filters />
             </div>
-
-            <ListProducts products={filteredProducts} />
+            {filteredProducts.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12 px-4 text-center bg-gray-50 rounded-xl border border-gray-200 transition-all hover:shadow-sm sm:h-[600px] xl:h-[1080px]">
+                    <span className="text-6xl mb-4">😞</span>
+                    <h3 className="text-xl font-medium text-gray-700 mb-2">¡Ups! No encontramos productos</h3>
+                    <p className="text-gray-500 mb-6 max-w-md">
+                        No hay productos que coincidan con la busqueda o los filtros seleccionados.
+                        Prueba ajustando los criterios de búsqueda.
+                    </p>
+                    <button 
+                        onClick={clearFilters}
+                        className="px-5 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                    >
+                        Reiniciar filtros
+                    </button>
+                </div>
+            ) : (
+                <div className="overflow-y-auto h-[1240px]">
+                    <ListProducts 
+                        products={filteredProducts}
+                        className="h-full overflow-y-auto"
+                    />
+                </div>
+            )}
         </section>
     );
 }
