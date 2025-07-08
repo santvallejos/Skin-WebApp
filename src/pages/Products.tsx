@@ -3,6 +3,7 @@ import { getAllProducts } from "@/services/ProductsServices";
 import ListProducts from "@/components/ListProducts";
 import { useProductStore } from "@/store/ProductsStore";
 import Filters from "@/components/Filters";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function Products() {
     const {
@@ -12,7 +13,9 @@ function Products() {
         minPrice,
         maxPrice,
         setProducts,
-        clearFilters
+        clearFilters,
+        isLoading,
+        setIsLoading
     } = useProductStore();
 
     // Aplicar filtros y ordenamiento
@@ -45,23 +48,36 @@ function Products() {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
+                setIsLoading(true);
                 const productsData = await getAllProducts();
                 setProducts(productsData);
             } catch (error) {
                 console.error("Error fetching products:", error);
+            } finally {
+                setIsLoading(false);
             }
         };
 
         fetchProducts();
-    }, [setProducts]);
+    }, [setProducts, setIsLoading]);
 
     return (
         <section className="flex flex-col p-4 md:p-6">
+            {isLoading ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4">
+                    {Array.from({ length: 8 }).map((_, index) => (
+                        <div key={index}>
+                            <Skeleton className="h-[522px] w-[322px" />
+                        </div>
+                    ))}
+                </div>
+            ) : (
             <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
                 <h2 className="text-3xl md:text-5xl font-bold text-gray-900">Productos</h2>
                 <Filters />
             </div>
-            {filteredProducts.length === 0 ? (
+            )}
+                {filteredProducts.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 px-4 text-center bg-gray-50 rounded-xl border border-gray-200 transition-all hover:shadow-sm sm:h-[600px] xl:h-[1080px]">
                     <span className="text-6xl mb-4">😞</span>
                     <h3 className="text-xl font-medium text-gray-700 mb-2">¡Ups! No encontramos productos</h3>
@@ -76,14 +92,11 @@ function Products() {
                         Reiniciar filtros
                     </button>
                 </div>
-            ) : (
-                <div className="overflow-y-auto h-[1240px]">
+                ) : (
                     <ListProducts 
                         products={filteredProducts}
-                        className="h-full overflow-y-auto"
                     />
-                </div>
-            )}
+                )}
         </section>
     );
 }

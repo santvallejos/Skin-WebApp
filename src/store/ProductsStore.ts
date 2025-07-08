@@ -10,6 +10,7 @@ interface productStore {
     maxPrice: number;
     models: string[];
     orderFor: sort; // Ordenar Por
+    isLoading: boolean;
 
     setProducts: (productos: ProductModel[]) => void;       // Lista de productos
     setOrderFor: (option: sort) => void;                    // Ordenar Por
@@ -18,6 +19,7 @@ interface productStore {
     setMaxPrice: (maxPrice: number) => void;                // Rango de precio maximo
     setModels: (models: string[]) => void;                  // Modelos
     clearFilters: () => void;
+    setIsLoading: (isLoading: boolean) => void;
 }
 
 export const useProductStore = create<productStore>((set) => ({
@@ -28,6 +30,7 @@ export const useProductStore = create<productStore>((set) => ({
     maxPrice: 20000,
     models: [],
     orderFor: 'highlight', // Predeterminado
+    isLoading: false,
     setProducts: (products: ProductModel[]) => {
         set({ products }); // Actualizar la lista de productos
     },
@@ -48,5 +51,8 @@ export const useProductStore = create<productStore>((set) => ({
     },
     clearFilters: () => {
         set({ minPrice: 0, maxPrice: 20000, models: [], orderFor: 'highlight' });
+    },
+    setIsLoading: (isLoading: boolean) => {
+        set({ isLoading });
     }
 }))
