@@ -67,7 +67,7 @@ const Navbar = () => {
   const itemsMenu = [
     { section: 'Inicio', href: '/' },
     { section: 'Productos', href: '/products' },
-    { section: 'Como comprar?', href: '/#ComoComprar', onClick: handleComoComprarClick },
+    { section: 'Cómo comprar?', href: '/#ComoComprar', onClick: handleComoComprarClick },
     { section: 'Contacto', href: '/contact' },
   ];
 
