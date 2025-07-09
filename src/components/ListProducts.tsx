@@ -41,7 +41,7 @@ function ListProducts({ products, className }: ListPorductsProps) {
                                     {product.name}
                                 </h3>
                                 <p className="text-lg text-white">
-                                    ${product.price}
+                                    ${product.price.toLocaleString('es-AR')}
                                 </p>
                             </div>
                         </Link>
