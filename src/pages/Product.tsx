@@ -62,7 +62,7 @@ function Product() {
                     setSelectModel(firstAvailableModel.model);
                 }
             })
-            getProductsRandom().then((products) => {
+            getProductsRandom(nameOriginal).then((products) => {
                 setProductsRandom(products);
             })
             setIsLoading(false);

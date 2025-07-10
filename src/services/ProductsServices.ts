@@ -58,8 +58,10 @@ export const getProductByName = async (name: string): Promise<ProductModel> => {
     }
 }
 
-export const getProductsRandom = async (): Promise<ProductModel[]> => {
-    const products = await getAllProducts(); // Obtener todos los productos
-    const productsRandom = products.sort(() => Math.random() - 0.5); // Ordenar los productos de forma aleatoria
-    return productsRandom.slice(0, 4); // Devolver los 4 primeros productos
+// Buscamos productos al azar pero evitamos repetir el producto actual
+export const getProductsRandom = async (productName: string): Promise<ProductModel[]> => {
+    const products = await getAllProducts();                                                                                // Obtener todos los productos
+    const productsRandom = products.filter((product) => product.name !== productName).sort(() => Math.random() - 0.5);     // Filtrar y ordenar aleatoriamente
+
+    return productsRandom.slice(0, 4); // Devolver solo 4 productos
 }
