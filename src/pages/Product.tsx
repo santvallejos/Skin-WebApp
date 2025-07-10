@@ -6,24 +6,21 @@ import { useCartStore } from '@/store/CartStore';
 import { deslugify } from '@/lib/deslugify';
 import Carousel from '@/components/Carousel';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useProductStore } from '@/store/ProductsStore';
 import ListProducts from '@/components/ListProducts';
+import NotProduct from './NotProduct';
 
 function Product() {
     const {
         addCart
     } = useCartStore();
 
-    const {
-        isLoading,
-        setIsLoading
-    } = useProductStore();
-
     const { name: slug } = useParams<{ name: string }>();
     const [product, setProduct] = useState<ProductModel>();
     const Quantity = useState<number>(1);
     const [productsRandom, setProductsRandom] = useState<ProductModel[]>([]);
     const [selectModel, setSelectModel] = useState<string>('');
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [notFound, setNotFound] = useState<boolean>(false);
 
     const handleAddCart = (product: ProductModel) => {
         const productToCart = {
@@ -52,27 +49,43 @@ function Product() {
 
     useEffect(() => {
         const nameOriginal = slug ? deslugify(slug) : '';
+        setIsLoading(true);
         if (nameOriginal) {
-            setIsLoading(true);
-            getProductByName(nameOriginal).then((product) => {
-                setProduct(product);
-                // Seleccionar el primer modelo con stock disponible
-                const firstAvailableModel = product.modelsStock.find(model => model.stock > 0);
-                if (firstAvailableModel) {
-                    setSelectModel(firstAvailableModel.model);
+            const loadProduct = async () => {
+                try {
+                    const prodcutData = await getProductByName(nameOriginal);
+                    setProduct(prodcutData);
+
+                    //Seleccionar el primer modelo con stock disponible
+                    const firtsAvailableModel = prodcutData.modelsStock.find(model => model.stock > 0);
+                    if (firtsAvailableModel) {
+                        setSelectModel(firtsAvailableModel.model);
+                    }
+
+                    const randomProducts = await getProductsRandom(nameOriginal);
+                    setProductsRandom(randomProducts);
+                    setNotFound(false);
+                } catch (error) {
+                    console.error('Error al cargar el producto:', error);
+                    setNotFound(true);
+                } finally {
+                    setIsLoading(false);
                 }
-            })
-            getProductsRandom(nameOriginal).then((products) => {
-                setProductsRandom(products);
-            })
+            }
+            loadProduct();
+        } else {
+            setNotFound(true);
             setIsLoading(false);
         }
     }, [slug, setIsLoading]);
 
-    return (
-        <section className='py-16'>
-            {isLoading ? (
-                <div>
+    if (notFound) {
+        return <NotProduct />
+    } else {
+        return (
+            <section className='py-16'>
+                {isLoading ? (
+                    <div>
                     <div className='container mx-auto px-4 pb-5'>
                         <div className='flex flex-col lg:flex-row gap-8 items-start'>
                             
@@ -201,6 +214,6 @@ function Product() {
             )}
         </section>
     );
+    }
 }
-
 export default Product;

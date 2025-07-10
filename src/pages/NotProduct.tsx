@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
-function NotFound(){
+function NotProduct(){
     return(
         <div className="min-h-screen bg-[#f5f1e8] flex items-center justify-center px-4">
             <div className="max-w-md mx-auto text-center space-y-6">
                 <h1 className="text-3xl font-bold text-gray-800">Skinn Accesorios</h1>
-                <h2 className="text-2xl font-bold text-gray-800">Página no encontrada</h2>
+                <h2 className="text-2xl font-bold text-gray-800">Producto no encontrado</h2>
                 <p className="text-gray-600">Volver a la pagina principal</p>
 
                 <div className="space-y-4">
@@ -19,4 +19,4 @@ function NotFound(){
     )
 }
 
-export default NotFound;
+export default NotProduct;
