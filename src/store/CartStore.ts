@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { CartItem } from '@/models/CartModel';
 import type { ProductToCart } from '@/models/ProductModel';
+import { loadCart, saveCart, CART_KEY } from '@/lib/SaveCart';
 
 interface cartStore {
     items: CartItem[]; // Lista de productos en el carrito
@@ -18,7 +19,7 @@ interface cartStore {
 
 export const useCartStore = create<cartStore>((set, get) => ({
     // inicializar variables
-    items: [],
+    items: loadCart(),
 
     addCart: (product: ProductToCart, quantity: number) => {
         // evaluar si el producto del mismo modelo ya esta en el carrito
@@ -43,6 +44,7 @@ export const useCartStore = create<cartStore>((set, get) => ({
                 items: [ { id: crypto.randomUUID(), product, quantity }, ...state.items ]
             }))
         }
+        saveCart(get().items);
     },
     removeCart: (itemCartId: string) => {
         // Evaluamos si el producto esta en el carrito
@@ -57,6 +59,7 @@ export const useCartStore = create<cartStore>((set, get) => ({
             // Si el producto no esta en el carrito, no hacemos nada
             return;
         }
+        saveCart(get().items);
     },
     updateQuantity: (itemCartId: string, quantity: number) => {
         // Evaluamos si el producto esta en el carrito
@@ -82,10 +85,12 @@ export const useCartStore = create<cartStore>((set, get) => ({
             // Si el producto no esta en el carrito, no hacemos nada
             return;
         }
+        saveCart(get().items);
     },
     clearCart: () => {
         // Limpiar el carrito
         set({ items: [] });
+        localStorage.removeItem(CART_KEY);
     },
     // Getter: subtotal de un ítem
     getSubtotal: (productId) => {
