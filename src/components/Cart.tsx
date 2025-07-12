@@ -18,6 +18,20 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
     removeCart(id);
   }
 
+  const handleWhatsAppOrder = () => {
+    const phoneNumber = "5493794948115";
+    const messageLines = [
+      "Buenas Skin!",
+      "Quiero realizar un pedido de la/s siguiente/s funda/s:",
+      ...items.map(item => `* ${item.product.name} - ${item.product.model} (x${item.quantity})`),
+    ];
+    const message = messageLines.join('\n');
+    const encodedMessage = encodeURIComponent(message);
+    window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
+    clearCart();
+    onClose();
+  };
+
   return (
     <div 
       className={`fixed inset-0 z-50 transition-opacity duration-300 ease-in-out ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
@@ -76,7 +90,7 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
                           {item.product.name} - {item.product.model}
                         </h3>
                         <p className="text-sm text-gray-600 mt-1">
-                          ${item.product.price.toFixed(3)} c/u
+                          ${item.product.price} c/u
                         </p>
                         
                         {/* Controles de cantidad */}
@@ -112,7 +126,7 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
                         {/* Subtotal */}
                         <div className="mt-2 text-right">
                           <p className="text-sm font-semibold text-gray-900">
-                            Subtotal: ${(item.product.price * item.quantity).toFixed(3)}
+                            Subtotal: ${(item.product.price * item.quantity).toLocaleString('es-AR')}
                           </p>
                         </div>
                       </div>
@@ -130,17 +144,17 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
               <div className="flex justify-between items-center py-2 border-b border-gray-100">
                 <span className="text-lg font-semibold text-gray-900">Total:</span>
                 <span className="text-xl font-bold text-gray-900">
-                  ${getTotal().toFixed(3)}
+                  ${getTotal().toLocaleString('es-AR')}
                 </span>
               </div>
               
               {/* Botones de acción */}
               <div className="space-y-2">
                 <button
-                  onClick={onClose}
-                  className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors text-base"
+                  onClick={handleWhatsAppOrder}
+                  className="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors text-base"
                 >
-                  Proceder al Pago
+                  Confirmar Pedido por WhatsApp
                 </button>
                 <button
                   onClick={clearCart}
