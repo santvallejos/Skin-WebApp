@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import logo from '../assets/LogoNavbar.png';
 
 function Footer() {
 
@@ -7,7 +8,7 @@ function Footer() {
         { section: 'Productos', href: '/products' },
         { section: 'Cómo comprar?', href: '/#ComoComprar'},
         { section: 'Contacto', href: '/contact' },
-      ];
+    ];
 
     return (
         <footer className="bg-gray-100">
@@ -37,7 +38,7 @@ function Footer() {
                     {/* Branding */}
                     <div className="flex flex-col items-center md:items-start gap-4">
                         <div className="flex items-center">
-                            <img src="LogoNavbar.png" alt="Skin Logo" className="w-36 h-10" />
+                            <img src={logo} alt="Skin Logo" className="w-36 h-10" />
                         </div>
                         <p className="text-sm text-gray-500">
                             &copy; {new Date().getFullYear()} Skin. Todos los derechos reservados.

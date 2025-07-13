@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { getFeaturedProducts } from "@/services/ProductsServices";
 import type { ProductModel } from "@/models/ProductModel";
 import ListProducts from '@/components/ListProducts';
+import carouse1 from '@/assets/carousel/carousel1.png';
+import carouse2 from '@/assets/carousel/carousel2.png';
 
 function Home() {
     const [featuredProducts, setFeaturedProducts] = useState<ProductModel[]>([]);
@@ -26,8 +28,8 @@ function Home() {
         <>
             <Carousel
                 images={[
-                    'https://acdn-us.mitiendanube.com/stores/001/096/065/themes/baires/1-slide-1747233659500-5849132071-6fd76fe510ad3f73ff33687c63b5c6cc1747233662-1920-1920.jpg?2121089043',
-                    '/1.png'
+                    carouse1,
+                    carouse2
                 ]}
                 autoPlayInterval={5000}
                 showControls={true}

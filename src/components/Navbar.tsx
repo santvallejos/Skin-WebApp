@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Cart from './Cart';
 import { useCartStore } from '@/store/CartStore';
+import logo from '../assets/LogoNavbar.png';
 import {
   Sheet,
   SheetContent,
@@ -150,7 +151,7 @@ const Navbar = () => {
             {/* Centro: Logo/Nombre en el centro */}
             <div className="flex-shrink-0 flex items-start">
               <Link to="/" className="flex items-center">
-                <img src="LogoNavbar.png" alt="Logo" className="h-10 object-cover" />
+                <img src={logo} alt="Logo" className="h-10 object-cover" />
               </Link>
             </div>
 
