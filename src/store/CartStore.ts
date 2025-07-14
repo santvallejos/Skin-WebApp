@@ -88,7 +88,7 @@ export const useCartStore = create<cartStore>((set, get) => ({
         saveCart(get().items);
     },
     clearCart: () => {
-        // Limpiar el carrito
+        // Limpiar completamente el carrito
         set({ items: [] });
         localStorage.removeItem(CART_KEY);
     },

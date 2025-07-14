@@ -72,8 +72,8 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
               </div>
             ) : (
               <div className="space-y-4">
-                {items.map((item) => (
-                  <div key={item.product.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                {items.map((item, index) => (
+                  <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                     <div className="flex gap-3">
                       {/* Imagen del producto */}
                       <div className="flex-shrink-0">
