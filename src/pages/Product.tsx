@@ -8,6 +8,7 @@ import Carousel from '@/components/Carousel';
 import { Skeleton } from '@/components/ui/skeleton';
 import ListProducts from '@/components/ListProducts';
 import NotProduct from './NotProduct';
+import Notifications, { AddToCart } from '@/components/Notifications';
 
 function Product() {
     const {
@@ -31,7 +32,8 @@ function Product() {
             model: selectModel || product.modelsStock[0].model
         }
         addCart(productToCart, Quantity[0]);
-    }
+        AddToCart(productToCart.name, selectModel || product.modelsStock[0].model, productToCart.price, Quantity[0]);
+        }
 
     const addQuantity = () => {
         Quantity[1](Quantity[0] + 1);
@@ -212,6 +214,7 @@ function Product() {
                 <ListProducts products={productsRandom} className='pl-24 pr-24'/>
                 </div>
             )}
+            <Notifications />
         </section>
     );
     }
