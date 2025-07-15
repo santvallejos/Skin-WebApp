@@ -159,7 +159,7 @@ function Product() {
                                     {product?.modelsStock.map((variant, idx) => (
                                         <button
                                             key={idx}
-                                            className={`px-1 py-1 border rounded text-sm transition-colors h-14 ${
+                                            className={`px-1 py-1 border rounded text-sm transition-colors lg:h-14 h-full ${
                                                 variant.stock === 0 
                                                     ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed' 
                                                     : selectModel?.model === variant.model
@@ -209,7 +209,7 @@ function Product() {
 
                 <h2 className='text-4xl font-bold text-[#d41e2b] text-center text-shadow-lg/20'>Otras fundas</h2>
 
-                <ListProducts products={productsRandom} className='pl-24 pr-24'/>
+                <ListProducts products={productsRandom} className='lg:pl-24 lg:pr-24'/>
                 </div>
             )}
         </section>

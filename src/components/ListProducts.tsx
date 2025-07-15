@@ -10,11 +10,11 @@ interface ListPorductsProps {
 function ListProducts({ products, className }: ListPorductsProps) {
     return (
         <div className={`p-5 ${className}`}>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <ul className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                 {products.map((product) => (
                     <li
                         key={product.id}
-                        className="flex flex-col bg-white rounded-2xl border border-gray-200 shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02]"
+                        className="flex flex-col bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md hover:scale-[1.01]"
                     >
                         <Link
                             to={`/products/${slugify(product.name)}`}
@@ -36,11 +36,11 @@ function ListProducts({ products, className }: ListPorductsProps) {
                                 )}
                             </div>
 
-                            <div className="flex flex-col items-center p-4 gap-2 bg-black">
-                                <h3 className="text-lg font-bold truncate text-white">
+                            <div className="flex flex-col items-center p-2 gap-1 bg-black">
+                                <h3 className="text-sm font-bold truncate text-white">
                                     {product.name}
                                 </h3>
-                                <p className="text-lg text-white">
+                                <p className="text-sm text-white">
                                     ${product.price.toLocaleString('es-AR')}
                                 </p>
                             </div>
