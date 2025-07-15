@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 import { getFeaturedProducts } from "@/services/ProductsServices";
 import type { ProductModel } from "@/models/ProductModel";
 import ListProducts from '@/components/ListProducts';
-import carouse1 from '@/assets/carousel/carousel1.png';
-import carouse2 from '@/assets/carousel/carousel2.png';
+import carouse1 from '@/assets/carousel/carousel1.webp';
+import carouse2 from '@/assets/carousel/carousel2.webp';
 
 function Home() {
     const [featuredProducts, setFeaturedProducts] = useState<ProductModel[]>([]);

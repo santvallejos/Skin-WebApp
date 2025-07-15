@@ -1,13 +1,20 @@
 import { BlurFade } from "../components/magicui/blur-fade";
+import aboutVideo1 from "../assets/about/aboutVideo1.mp4";
+import about1 from "../assets/about/about1.webp";
+import about2 from "../assets/about/about2.webp";
+import about4 from "../assets/about/about4.webp";
+import about5 from "../assets/about/about5.webp";
+import about6 from "../assets/about/about6.webp";
+
 
 // Definir las rutas de los medios (imágenes y video)
 const media = [
-    { type: "video", url: "pruebavideo.mp4" },
-    { type: "image", url: "https://acdn-us.mitiendanube.com/stores/001/096/065/products/vintage-case-negra-c468b419ea9128375317285049354616-1024-1024.jpg" },
-    { type: "image", url: "https://acdn-us.mitiendanube.com/stores/001/096/065/products/sweet-cases-0a0659156a04ad5f8917228867568900-1024-1024.jpg" },
-    { type: "image", url: "https://acdn-us.mitiendanube.com/stores/001/096/065/products/img_4992-2060009c031c4f1fd617316171910221-1024-1024.jpg" },
-    { type: "image", url: "https://acdn-us.mitiendanube.com/stores/001/096/065/products/img_4979-138e68ccfc1be0aca417316171419600-1024-1024.jpg" },
-    { type: "image", url: "https://acdn-us.mitiendanube.com/stores/001/096/065/products/img_6462-3bd4bdf0271cf88a7017398255478522-1024-1024.png" },
+    { type: "image", url: about1 },
+    { type: "image", url: about2 },
+    { type: "image", url: about5 },
+    { type: "video", url: aboutVideo1 },
+    { type: "image", url: about4 },
+    { type: "image", url: about6 },
 ];
 
 function AboutUs() {
