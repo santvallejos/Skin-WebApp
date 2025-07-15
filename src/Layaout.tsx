@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Outlet } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 
 function Layaout() {
   return (
@@ -10,6 +11,7 @@ function Layaout() {
         <Outlet />
       </div>
       <Footer />
+      <ToastContainer />
     </>
   );
 }

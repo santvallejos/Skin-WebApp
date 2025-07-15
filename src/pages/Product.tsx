@@ -8,7 +8,6 @@ import Carousel from '@/components/Carousel';
 import { Skeleton } from '@/components/ui/skeleton';
 import ListProducts from '@/components/ListProducts';
 import NotProduct from './NotProduct';
-import Notifications, { AddToCart } from '@/components/Notifications';
 
 function Product() {
     const {
@@ -19,21 +18,20 @@ function Product() {
     const [product, setProduct] = useState<ProductModel>();
     const Quantity = useState<number>(1);
     const [productsRandom, setProductsRandom] = useState<ProductModel[]>([]);
-    const [selectModel, setSelectModel] = useState<string>('');
+    const [selectModel, setSelectModel] = useState<{model: string, stock: number}>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [notFound, setNotFound] = useState<boolean>(false);
 
-    const handleAddCart = (product: ProductModel) => {
+    const handleAddCart = async (product: ProductModel) => {
         const productToCart = {
             id: product.id,
             name: product.name,
             images: product.images,
             price: product.price,
-            model: selectModel || product.modelsStock[0].model
+            model: selectModel?.model || product.modelsStock[0].model
         }
-        addCart(productToCart, Quantity[0]);
-        AddToCart(productToCart.name, selectModel || product.modelsStock[0].model, productToCart.price, Quantity[0]);
-        }
+        addCart(productToCart, Quantity[0], selectModel?.stock || product.modelsStock[0].stock);
+    }
 
     const addQuantity = () => {
         Quantity[1](Quantity[0] + 1);
@@ -45,7 +43,7 @@ function Product() {
         }
     }
 
-    const handleSelectModel = (model: string) => {
+    const handleSelectModel = (model: {model: string, stock: number}) => {
         setSelectModel(model);
     }
 
@@ -61,7 +59,7 @@ function Product() {
                     //Seleccionar el primer modelo con stock disponible
                     const firtsAvailableModel = prodcutData.modelsStock.find(model => model.stock > 0);
                     if (firtsAvailableModel) {
-                        setSelectModel(firtsAvailableModel.model);
+                        setSelectModel(firtsAvailableModel);
                     }
 
                     const randomProducts = await getProductsRandom(nameOriginal);
@@ -164,18 +162,18 @@ function Product() {
                                             className={`px-1 py-1 border rounded text-sm transition-colors h-14 ${
                                                 variant.stock === 0 
                                                     ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed' 
-                                                    : selectModel === variant.model
+                                                    : selectModel?.model === variant.model
                                                     ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
                                                     : 'border-gray-300 hover:border-indigo-500'
                                             }`}
                                             disabled={variant.stock === 0}
-                                            onClick={() => variant.stock > 0 && handleSelectModel(variant.model)}
+                                            onClick={() => variant.stock > 0 && handleSelectModel(variant)}
                                         >
                                             {variant.model}
                                             {variant.stock === 0 && (
                                                 <span className="block text-xs mt-1">Sin stock</span>
                                             )}
-                                            {selectModel === variant.model && variant.stock > 0 && (
+                                            {selectModel?.model === variant.model && variant.stock > 0 && (
                                                 <span className="block text-xs mt-1 text-indigo-600">Seleccionado</span>
                                             )}
                                         </button>
@@ -214,7 +212,6 @@ function Product() {
                 <ListProducts products={productsRandom} className='pl-24 pr-24'/>
                 </div>
             )}
-            <Notifications />
         </section>
     );
     }
