@@ -105,7 +105,7 @@ const Carousel = ({
   };
   
   return (
-    <div className={`relative overflow-hidden w-full max-h-[80vh] ${containerClassName}`}>
+    <div className={`relative overflow-hidden w-full max-h-[80vh] md:max-h-[90vh] ${containerClassName}`}>
       <div 
         ref={carouselRef}
         className="flex transition-transform duration-300 ease-out h-full"
@@ -129,7 +129,7 @@ const Carousel = ({
             <img 
               src={image} 
               alt={`Slide ${index + 1}`} 
-              className="w-full h-full object-cover max-h-[80vh]"
+              className="w-full h-full object-cover max-h-[80vh] md:max-h-[100vh]"
               draggable="false"
             />
           </div>

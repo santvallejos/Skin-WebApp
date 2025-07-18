@@ -19,7 +19,7 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
   }
 
   const handleWhatsAppOrder = () => {
-    const phoneNumber = "5493794948115";
+    const phoneNumber = "5493795026137";
     const messageLines = [
       "Buenas Skin!",
       "Quiero realizar un pedido de la/s siguiente/s funda/s:",

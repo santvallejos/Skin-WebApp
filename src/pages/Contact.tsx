@@ -1,6 +1,10 @@
 import { EnvelopeIcon, PhoneIcon, MapPinIcon } from '@heroicons/react/24/solid';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 function Contact() {
+  const accessKey = import.meta.env.VITE_API_STATIC_FORMS;
+  const redirectUrl = 'https://skincts.vercel.app/';
+
   return (
     <section className="text-gray-600 body-font relative bg-gray-50">
       <div className="container px-5 py-24 mx-auto flex flex-col">
@@ -43,7 +47,7 @@ function Contact() {
               </div>
               <div>
                 <h3 className="text-gray-900 font-medium">Email</h3>
-                <a className="mt-1 text-red-500 hover:text-red-600 transition-colors">Skin.ctes@gmail.com</a>
+                <a className="mt-1 text-red-500 hover:text-red-600 transition-colors">skin.ctes@gmail.com</a>
               </div>
             </div>
             
@@ -53,7 +57,7 @@ function Contact() {
               </div>
               <div>
                 <h3 className="text-gray-900 font-medium">Teléfono</h3>
-                <p className="mt-1 text-gray-600">+54 3794 94-8115</p>
+                <p className="mt-1 text-gray-600">+54 9 3795 02-6137</p>
               </div>
             </div>
           </div>
@@ -64,6 +68,13 @@ function Contact() {
           <h2 className="text-2xl font-bold text-gray-900 mb-6 pb-2 border-b">Envíanos un mensaje</h2>
           <p className="text-gray-600 mb-6">Cualquier consulta no dudes en comunicarte a través de WhatsApp, Instagram o Email!</p>
           
+          <form 
+            method="POST"
+            action="https://api.staticforms.xyz/submit"
+          >
+            <input type="hidden" name="accessKey" value={accessKey} />
+            <input type="hidden" name="redirectTo" value={redirectUrl} />
+            
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
@@ -71,6 +82,7 @@ function Contact() {
                 type="text" 
                 id="name" 
                 name="name" 
+                required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-300 focus:border-red-500 transition-colors"
                 placeholder="Tu nombre"
               />
@@ -81,6 +93,7 @@ function Contact() {
                 type="email" 
                 id="email" 
                 name="email" 
+                required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-300 focus:border-red-500 transition-colors"
                 placeholder="tu@email.com"
               />
@@ -93,14 +106,24 @@ function Contact() {
               id="message" 
               name="message" 
               rows={4}
+              required
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-300 focus:border-red-500 transition-colors"
               placeholder="Escribe tu mensaje aquí..."
             ></textarea>
           </div>
-          
-          <button className="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300 transform hover:scale-[1.02] focus:outline-none">
+
+          {/* CAPTCHA v2 visible */}
+          <div className="g-recaptcha" data-sitekey={import.meta.env.VITE_CAPTCHA_HTML}></div>
+          <ReCAPTCHA
+            sitekey={import.meta.env.VITE_CAPTCHA_HTML}
+          />
+
+          <button 
+            type="submit"
+            className="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300 transform hover:scale-[1.02] focus:outline-none">
             Enviar mensaje
           </button>
+          </form>
         </div>
       </div>
     </section>
