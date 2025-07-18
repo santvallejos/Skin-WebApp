@@ -11,7 +11,7 @@ import about6 from "../assets/about/about6.webp";
 const media = [
     { type: "image", url: about1 },
     { type: "image", url: about2 },
-    { type: "image", url: about5 },
+    { type: "image", url: about5 }, /* Solucion del error About5 a about5 - No realizaba el deploy */
     { type: "video", url: aboutVideo1 },
     { type: "image", url: about4 },
     { type: "image", url: about6 },
