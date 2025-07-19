@@ -1,9 +1,62 @@
 import { EnvelopeIcon, PhoneIcon, MapPinIcon } from '@heroicons/react/24/solid';
 import ReCAPTCHA from 'react-google-recaptcha';
+import { useState, useRef } from 'react';
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogDescription,
+  DialogFooter 
+} from '@/components/ui/dialog';
 
 function Contact() {
   const accessKey = import.meta.env.VITE_API_STATIC_FORMS;
-  const redirectUrl = 'https://skincts.vercel.app/';
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const formData = new FormData(formRef.current!);
+      
+      // Obtener el token del reCAPTCHA
+      const recaptchaToken = recaptchaRef.current?.getValue();
+      if (!recaptchaToken) {
+        alert('Por favor, completa el reCAPTCHA');
+        setIsSubmitting(false);
+        return;
+      }
+
+      formData.append('g-recaptcha-response', recaptchaToken);
+      formData.append('accessKey', accessKey);
+
+      const response = await fetch('https://api.staticforms.xyz/submit', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (response.ok) {
+        // Mostrar dialog de éxito
+        setIsDialogOpen(true);
+        // Limpiar formulario
+        formRef.current?.reset();
+        // Resetear reCAPTCHA
+        recaptchaRef.current?.reset();
+      } else {
+        throw new Error('Error al enviar el formulario');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Hubo un error al enviar el mensaje. Por favor, inténtalo de nuevo.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <section className="text-gray-600 body-font relative bg-gray-50">
@@ -69,11 +122,9 @@ function Contact() {
           <p className="text-gray-600 mb-6">Cualquier consulta no dudes en comunicarte a través de WhatsApp, Instagram o Email!</p>
           
           <form 
-            method="POST"
-            action="https://api.staticforms.xyz/submit"
+            ref={formRef}
+            onSubmit={handleSubmit}
           >
-            <input type="hidden" name="accessKey" value={accessKey} />
-            <input type="hidden" name="redirectTo" value={redirectUrl} />
             
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
@@ -113,19 +164,42 @@ function Contact() {
           </div>
 
           {/* CAPTCHA v2 visible */}
-          <div className="g-recaptcha" data-sitekey={import.meta.env.VITE_CAPTCHA_HTML}></div>
-          <ReCAPTCHA
-            sitekey={import.meta.env.VITE_CAPTCHA_HTML}
-          />
+          <div className="mb-6">
+            <ReCAPTCHA
+              ref={recaptchaRef}
+              sitekey={import.meta.env.VITE_CAPTCHA_HTML}
+            />
+          </div>
 
           <button 
             type="submit"
-            className="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300 transform hover:scale-[1.02] focus:outline-none">
-            Enviar mensaje
+            disabled={isSubmitting}
+            className="w-full bg-red-500 hover:bg-red-600 disabled:bg-red-300 disabled:cursor-not-allowed text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300 transform hover:scale-[1.02] focus:outline-none">
+            {isSubmitting ? 'Enviando...' : 'Enviar mensaje'}
           </button>
           </form>
         </div>
       </div>
+
+      {/* Dialog de confirmación */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-green-600">¡Mensaje enviado correctamente!</DialogTitle>
+            <DialogDescription className="text-gray-600">
+              Gracias por contactarnos. Hemos recibido tu mensaje y nos pondremos en contacto contigo a la brevedad.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <button
+              onClick={() => setIsDialogOpen(false)}
+              className="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300"
+            >
+              Cerrar
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }
