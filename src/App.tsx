@@ -1,10 +1,10 @@
-import Home from './pages/Home';
-import Products from './pages/Products';
-import Contact from './pages/Contact';
+import Home from './pages/home/page';
+import Products from './pages/products/page';
+import Contact from './pages/contact/page';
 import Layaout from './Layaout';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Product from './pages/Product';
-import NotFound from './pages/NotFound';
+import Product from './pages/product/page';
+import NotFound from './pages/404/page';
 
 function App() {
   return (

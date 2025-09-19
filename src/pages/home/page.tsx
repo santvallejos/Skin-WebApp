@@ -1,5 +1,5 @@
-import Carousel from '../components/Carousel';
-import AboutUs from '../components/AboutUs';
+import Carousel from '../../components/Carousel';
+import AboutUs from '../../components/AboutUs';
 import AnimatedContent from '@/components/ui/AnimatedContent';
 import { useEffect, useState } from "react";
 import { getFeaturedProducts } from "@/services/ProductsServices";
