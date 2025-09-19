@@ -1,11 +1,19 @@
 import { useState, useEffect } from 'react'
 import supabase from '@/lib/supabase'
 
-// Definir el tipo para los datos de case_stock
+/* 
+0: Object { id: "47df0713-add9-40f8-b0d9-64a3c8f46a4d", cases: {…}, phone_model: {…} }
+cases: Object { name: "Fire Matte" }
+id: "47df0713-add9-40f8-b0d9-64a3c8f46a4d"
+phone_model: Object { name: "iPhone 11 " }
+<prototype>: Object { … }
+*/
+
+// Definir el tipo para los datos de case_stock con información de las tablas relacionadas
 interface CaseStock {
   id: string; // En la BD real será uuid
-  case_id: number;
-  phone_model_id: number;
+  cases: { name: string } | null;
+  phone_model: { name: string } | null;
   stock: number;
 }
 
@@ -20,8 +28,18 @@ function Page() {
         setLoading(true)
         const { data, error } = await supabase
           .from('case_stock')
-          .select('*')
+          .select(`
+            id, 
+            cases!case_id (
+              name
+            ),
+            phone_model!phone_model_id (
+              name
+            ),
+            stock
+          `)
         
+        console.log('Supabase response:', { data, error })
         if (error) {
           setError(error.message)
           console.error('Error fetching data:', error)
@@ -59,7 +77,10 @@ function Page() {
         <ul>
           {caseStockData.map((item) => (
             <li key={item.id}>
-              ID: {item.id} | Case ID: {item.case_id} | Phone Model ID: {item.phone_model_id} | Stock: {item.stock}
+              ID: {item.id} | 
+                Funda: {item.cases?.name || 'Sin nombre'} | 
+                Modelo: {item.phone_model?.name || 'Sin nombre'} | 
+              Stock: {item.stock}
             </li>
           ))}
         </ul>
