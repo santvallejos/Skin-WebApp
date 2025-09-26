@@ -1,11 +1,14 @@
 import { useEffect, useMemo } from "react";
-import { getAllProducts } from "@/services/ProductsServices";
-import ListProducts from "@/components/ListProducts";
+import { getAllProductsFromSupabase } from "@/services/SupabaseProductsService";
 import { useProductStore } from "@/store/ProductsStore";
-import Filters from "@/components/Filters";
 import { Skeleton } from "@/components/ui/skeleton";
+import ListProducts from "@/components/ListProducts";
+import Filters from "@/components/Filters";
+
 
 function Products() {
+    //const [products, setProducts] = useState<Product[]>([]);
+    //const [stock, setStock] = useState<Stock[]>([]);
     const {
         products,
         orderFor,
@@ -20,21 +23,33 @@ function Products() {
 
     // Aplicar filtros y ordenamiento
     const filteredProducts = useMemo(() => {
-        if (!products) return [];
+        if (!products || products.length === 0) return [];
 
         return [...products].filter(product => {
-            const matchesModels = models.length === 0 || product.modelsStock.some(variant => models.includes(variant.model) && variant.stock > 0);
-            const matchesPrice = (minPrice === 0 && maxPrice === 0) || (product.price >= minPrice && product.price <= maxPrice);
+            // Filtrar por modelos - verificar si algún stock coincide con los modelos seleccionados
+            const matchesModels = models.length === 0 || 
+                product.modelStock.some(stock => 
+                    stock.phone_model && 
+                    models.includes(stock.phone_model.name) && 
+                    stock.stock > 0
+                );
+
+            // Filtrar por precio
+            const productPrice = product.new_price || product.price;
+            const matchesPrice = productPrice >= minPrice && productPrice <= maxPrice;
 
             return matchesModels && matchesPrice;
         }).sort((a, b) => {
-            switch(orderFor){
+            const priceA = a.new_price || a.price;
+            const priceB = b.new_price || b.price;
+
+            switch (orderFor) {
                 case 'highlight':
-                    return 0;
+                    return 0; // Mantener orden original para destacados
                 case 'priceMin':
-                    return a.price - b.price;
+                    return priceA - priceB;
                 case 'priceMax':
-                    return b.price - a.price;
+                    return priceB - priceA;
                 case 'az':
                     return a.name.localeCompare(b.name);
                 case 'za':
@@ -42,14 +57,14 @@ function Products() {
                 default:
                     return 0;
             }
-        })
+        });
     }, [products, models, minPrice, maxPrice, orderFor]);
 
     useEffect(() => {
         const fetchProducts = async () => {
             try {
                 setIsLoading(true);
-                const productsData = await getAllProducts();
+                const productsData = await getAllProductsFromSupabase();
                 setProducts(productsData);
             } catch (error) {
                 console.error("Error fetching products:", error);
@@ -61,42 +76,45 @@ function Products() {
         fetchProducts();
     }, [setProducts, setIsLoading]);
 
-    return (
-        <section className="flex flex-col p-4 md:p-6">
-            {isLoading ? (
+    if (isLoading) {
+        return (
+            <section className="flex flex-col p-4 md:p-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4">
                     {Array.from({ length: 8 }).map((_, index) => (
                         <div key={index}>
-                            <Skeleton className="h-[522px] w-[322px" />
+                            <Skeleton className="h-[522px] w-[322px]" />
                         </div>
                     ))}
                 </div>
-            ) : (
+            </section>
+        );
+    }
+
+    return (
+        <section className="flex flex-col p-4 md:p-6">
             <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
                 <h2 className="text-3xl md:text-5xl font-bold text-gray-900">Productos</h2>
                 <Filters />
             </div>
-            )}
-                {filteredProducts.length === 0 ? (
+
+            {filteredProducts.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 px-4 text-center bg-gray-50 rounded-xl border border-gray-200 transition-all hover:shadow-sm sm:h-[600px] xl:h-[1080px]">
                     <span className="text-6xl mb-4">😞</span>
                     <h3 className="text-xl font-medium text-gray-700 mb-2">¡Ups! No encontramos productos</h3>
                     <p className="text-gray-500 mb-6 max-w-md">
-                        No hay productos que coincidan con la busqueda o los filtros seleccionados.
+                        No hay productos que coincidan con la búsqueda o los filtros seleccionados.
                         Prueba ajustando los criterios de búsqueda.
                     </p>
-                    <button 
+                    <button
                         onClick={clearFilters}
                         className="px-5 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                     >
                         Reiniciar filtros
                     </button>
                 </div>
-                ) : (
-                    <ListProducts 
-                        products={filteredProducts}
-                    />
-                )}
+            ) : (
+                <ListProducts products={filteredProducts} />
+            )}
         </section>
     );
 }

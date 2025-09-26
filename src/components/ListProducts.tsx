@@ -10,7 +10,7 @@ interface ListPorductsProps {
 function ListProducts({ products, className }: ListPorductsProps) {
     // Función para verificar si un producto tiene stock disponible
     const hasStock = (product: ProductModel): boolean => {
-        return product.modelsStock.some(model => model.stock > 0);
+        return product.modelStock.some(stock => stock.stock > 0);
     };
 
     return (
@@ -39,7 +39,7 @@ function ListProducts({ products, className }: ListPorductsProps) {
                                         <img
                                             src={product.images[1]}
                                             alt={product.name}
-                                            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-0 group-hover:opacity-100 transform group-hover:scale-110 transition-transform duration-500"
+                                            className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500"
                                         />
                                     )}
                                     

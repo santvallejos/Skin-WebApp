@@ -2,7 +2,7 @@ import Carousel from '../../components/Carousel';
 import AboutUs from '../../components/AboutUs';
 import AnimatedContent from '@/components/ui/AnimatedContent';
 import { useEffect, useState } from "react";
-import { getFeaturedProducts } from "@/services/ProductsServices";
+import { getFeaturedProductsFromSupabase } from "@/services/SupabaseProductsService";
 import type { ProductModel } from "@/models/ProductModel";
 import ListProducts from '@/components/ListProducts';
 import carousel1 from '@/assets/carousel/carousel1.webp';
@@ -14,7 +14,7 @@ function Home() {
     useEffect(() => {
         const fetchFeatureProducts = async () => {
             try {
-                const featuredProductsData = await getFeaturedProducts();
+                const featuredProductsData = await getFeaturedProductsFromSupabase();
                 setFeaturedProducts(featuredProductsData);
             } catch (error) {
                 console.error("Error fetching products:", error);
@@ -22,7 +22,7 @@ function Home() {
         };
 
         fetchFeatureProducts();
-    });
+    }, []);
 
     return (
         <>

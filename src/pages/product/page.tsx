@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import type { ProductModel } from '@/models/ProductModel';
-import { getProductByName, getProductsRandom} from '@/services/ProductsServices';
+import { getProductByNameFromSupabase, getProductsRandomFromSupabase } from '@/services/SupabaseProductsService';
 import { useCartStore } from '@/store/CartStore';
 import { deslugify } from '@/lib/deslugify';
 import Carousel from '@/components/Carousel';
@@ -23,14 +23,15 @@ function Product() {
     const [notFound, setNotFound] = useState<boolean>(false);
 
     const handleAddCart = async (product: ProductModel) => {
+        const firstModelStock = product.modelStock.find(stock => stock.phone_model);
         const productToCart = {
             id: product.id,
             name: product.name,
             images: product.images,
             price: product.price,
-            model: selectModel?.model || product.modelsStock[0].model
+            model: selectModel?.model || firstModelStock?.phone_model?.name || ''
         }
-        addCart(productToCart, Quantity[0], selectModel?.stock || product.modelsStock[0].stock);
+        addCart(productToCart, Quantity[0], selectModel?.stock || firstModelStock?.stock || 0);
     }
 
     const addQuantity = () => {
@@ -53,16 +54,19 @@ function Product() {
         if (nameOriginal) {
             const loadProduct = async () => {
                 try {
-                    const prodcutData = await getProductByName(nameOriginal);
+                    const prodcutData = await getProductByNameFromSupabase(nameOriginal);
                     setProduct(prodcutData);
 
                     //Seleccionar el primer modelo con stock disponible
-                    const firtsAvailableModel = prodcutData.modelsStock.find(model => model.stock > 0);
-                    if (firtsAvailableModel) {
-                        setSelectModel(firtsAvailableModel);
+                    const firtsAvailableModel = prodcutData.modelStock.find(stock => stock.stock > 0);
+                    if (firtsAvailableModel && firtsAvailableModel.phone_model) {
+                        setSelectModel({
+                            model: firtsAvailableModel.phone_model.name,
+                            stock: firtsAvailableModel.stock
+                        });
                     }
 
-                    const randomProducts = await getProductsRandom(nameOriginal);
+                    const randomProducts = await getProductsRandomFromSupabase(nameOriginal);
                     setProductsRandom(randomProducts);
                     setNotFound(false);
                 } catch (error) {
@@ -156,24 +160,27 @@ function Product() {
                             <div className="mb-6">
                                 <h3 className="text-lg font-semibold mb-3">MODELO:</h3>
                                 <div className="grid grid-cols-4 gap-2">
-                                    {product?.modelsStock.map((variant, idx) => (
+                                    {product?.modelStock.map((stockItem, idx) => (
                                         <button
                                             key={idx}
                                             className={`px-1 py-1 border rounded text-sm transition-colors lg:h-14 h-full ${
-                                                variant.stock === 0 
+                                                stockItem.stock === 0 
                                                     ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed' 
-                                                    : selectModel?.model === variant.model
+                                                    : selectModel?.model === stockItem.phone_model?.name
                                                     ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
                                                     : 'border-gray-300 hover:border-indigo-500'
                                             }`}
-                                            disabled={variant.stock === 0}
-                                            onClick={() => variant.stock > 0 && handleSelectModel(variant)}
+                                            disabled={stockItem.stock === 0 || !stockItem.phone_model}
+                                            onClick={() => stockItem.stock > 0 && stockItem.phone_model && handleSelectModel({
+                                                model: stockItem.phone_model.name,
+                                                stock: stockItem.stock
+                                            })}
                                         >
-                                            {variant.model}
-                                            {variant.stock === 0 && (
+                                            {stockItem.phone_model?.name}
+                                            {stockItem.stock === 0 && (
                                                 <span className="block text-xs mt-1">Sin stock</span>
                                             )}
-                                            {selectModel?.model === variant.model && variant.stock > 0 && (
+                                            {selectModel?.model === stockItem.phone_model?.name && stockItem.stock > 0 && (
                                                 <span className="block text-xs mt-1 text-indigo-600">Seleccionado</span>
                                             )}
                                         </button>

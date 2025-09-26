@@ -8,30 +8,13 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { useProductStore } from "@/store/ProductsStore";
 import type { sort } from "@/store/ProductsStore";
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Button } from "@/components/ui/button";
-
-const modelsCases = [
-    "iPhone 11",
-    "iPhone 12",
-    "iPhone 12 Pro",
-    "iPhone 12 Pro Max",
-    "iPhone 13",
-    "iPhone 13 Pro",
-    "iPhone 13 Pro Max",
-    "iPhone 14",
-    "iPhone 14 Pro",
-    "iPhone 14 Pro Max",
-    "iPhone 15",
-    "iPhone 15 Pro",
-    "iPhone 15 Pro Max",
-    "iPhone 16",
-    "iPhone 16 Pro",
-    "iPhone 16 Pro Max",
-]
+import supabase from "@/lib/supabase";
 
 function Filters() {
     const {
+        products,
         orderFor,
         setOrderFor,
         models,
@@ -40,7 +23,50 @@ function Filters() {
         setMaxPrice,
         clearFilters
     } = useProductStore();
-    const [isExpanded, setIsExpanded] = useState(false); // Efecto de expandir la lista de modelos
+
+    const [isExpanded, setIsExpanded] = useState(false);
+    const [availableModels, setAvailableModels] = useState<string[]>([]);
+
+    // Obtener modelos disponibles desde Supabase
+    useEffect(() => {
+        const fetchAvailableModels = async () => {
+            try {
+                const { data, error } = await supabase
+                    .from('phone_model')
+                    .select('name')
+                    .order('name');
+
+                if (error) {
+                    console.error('Error fetching phone models:', error);
+                    return;
+                }
+
+                const modelNames = data?.map(item => item.name) || [];
+                setAvailableModels(modelNames);
+            } catch (error) {
+                console.error('Error fetching available models:', error);
+            }
+        };
+
+        fetchAvailableModels();
+    }, []);
+
+    // Filtrar solo modelos que tienen stock disponible
+    const modelsWithStock = useMemo(() => {
+        if (!products || products.length === 0) return availableModels;
+
+        const modelsInStock = new Set<string>();
+        
+        products.forEach(product => {
+            product.modelStock.forEach(stock => {
+                if (stock.stock > 0 && stock.phone_model) {
+                    modelsInStock.add(stock.phone_model.name);
+                }
+            });
+        });
+
+        return availableModels.filter(model => modelsInStock.has(model));
+    }, [products, availableModels]);
     
 
     // Cambiar el ordenamiento
@@ -50,9 +76,9 @@ function Filters() {
 
     // Filtrar por modelo
     const handleModelChange = (model: string) => {
-        if(!models.includes(model)){
+        if (!models.includes(model)) {
             setModels([...models, model]);
-        }else{
+        } else {
             setModels(models.filter((m) => m !== model));
         }
     };
@@ -85,27 +111,28 @@ function Filters() {
 
                                 <SheetTitle className="pt-4">Modelo</SheetTitle>
                                 <div className="flex flex-col gap-2">
-                                {modelsCases
-                                .slice(0, isExpanded ? modelsCases.length : 5)
-                                .map((value) => (
-                                    <div key={value} className="flex items-center gap-2">
-                                        <Checkbox
-                                            className="cursor-pointer" 
-                                            id={value}
-                                            checked={models.includes(value)}
-                                            onCheckedChange={() => handleModelChange(value)}
-                                        />
-                                        <label htmlFor={value}>{value}</label>
-                                    </div>
-                                ))}
-                                    {modelsCases.length > 5 && (
-                                        <button
-                                            className="text-blue-500 mt-2 text-left cursor-pointer"
-                                            onClick={() => setIsExpanded(!isExpanded)}
-                                        >
-                                            {isExpanded ? 'Ver menos' : 'Ver más'}
-                                        </button>
-                                    )}
+                                {modelsWithStock
+                                    .slice(0, isExpanded ? modelsWithStock.length : 5)
+                                    .map((value) => (
+                                        <div key={value} className="flex items-center gap-2">
+                                            <Checkbox
+                                                className="cursor-pointer" 
+                                                id={value}
+                                                checked={models.includes(value)}
+                                                onCheckedChange={() => handleModelChange(value)}
+                                            />
+                                            <label htmlFor={value}>{value}</label>
+                                        </div>
+                                    ))
+                                }
+                                {modelsWithStock.length > 5 && (
+                                    <button
+                                        className="text-blue-500 mt-2 text-left cursor-pointer"
+                                        onClick={() => setIsExpanded(!isExpanded)}
+                                    >
+                                        {isExpanded ? 'Ver menos' : 'Ver más'}
+                                    </button>
+                                )}
                                 </div>
 
                                 <SheetTitle className="pt-4">Precio Máximo:</SheetTitle>
@@ -118,7 +145,7 @@ function Filters() {
                                         max={20000}
                                         value={maxPrice}
                                     />
-                                    <span>{maxPrice}</span>
+                                    <span>${maxPrice.toLocaleString('es-AR')}</span>
                                 </div>
                                 <Button
                                     className="btn btn-primary hover:bg-red-500 w-28 cursor-pointer"
