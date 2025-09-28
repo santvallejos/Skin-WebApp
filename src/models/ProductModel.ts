@@ -1,18 +1,18 @@
+/* Phone model interface */
 export interface PhoneModel {
     id: string;
     name: string;
 }
 
+/* Case stock interface */
 export interface CaseStock {
     id: string;
-    case_id: string;
-    phone_model_id: string;
+    phone_model: PhoneModel;
+    color_hex: string;
     stock: number;
-    color_hex: string | null;
-    phone_model: PhoneModel | null;
 }
 
-export interface ProductModel {
+export interface CaseModel {
     id: string;
     name: string;
     description: string;
@@ -21,15 +21,11 @@ export interface ProductModel {
     new_price: number | null;
     images: string[];
     stock: boolean;
-    // Nuevo campo para el stock por modelo
+    // Stock por modelo
     modelStock: CaseStock[];
 }
 
-export interface ProductVariant {
-    model: string;
-    stock: number;
-}
-
-export interface ProductToCart extends Pick<ProductModel, 'id' | 'name' | 'images' | 'price'> {
+/* Product to cart interface */
+export interface ProductToCart extends Pick<CaseModel, 'id' | 'name' | 'images' | 'price'> {
     model: string;
 }

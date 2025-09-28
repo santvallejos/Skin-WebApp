@@ -1,16 +1,14 @@
 import { useEffect, useMemo } from "react";
-import { getAllProductsFromSupabase } from "@/services/SupabaseProductsService";
+//import { getAllProductsFromSupabase } from "@/services/SupabaseProductsService"; //Servicio creado aparte para supabase
+import { getAllCases } from "@/services/ProductsServices";
 import { useProductStore } from "@/store/ProductsStore";
 import { Skeleton } from "@/components/ui/skeleton";
 import ListProducts from "@/components/ListProducts";
 import Filters from "@/components/Filters";
 
-
 function Products() {
-    //const [products, setProducts] = useState<Product[]>([]);
-    //const [stock, setStock] = useState<Stock[]>([]);
     const {
-        products,
+        cases, // Ya manejamos en un estado global los productos
         orderFor,
         models,
         minPrice,
@@ -23,9 +21,10 @@ function Products() {
 
     // Aplicar filtros y ordenamiento
     const filteredProducts = useMemo(() => {
-        if (!products || products.length === 0) return [];
+        if (!cases || cases.length === 0) return []; // Manejar caso cuando no hay productos
 
-        return [...products].filter(product => {
+        return [...cases].filter(product => {
+
             // Filtrar por modelos - verificar si algún stock coincide con los modelos seleccionados
             const matchesModels = models.length === 0 || 
                 product.modelStock.some(stock => 
@@ -40,12 +39,14 @@ function Products() {
 
             return matchesModels && matchesPrice;
         }).sort((a, b) => {
+
+            // Ordenar según el criterio seleccionado
             const priceA = a.new_price || a.price;
             const priceB = b.new_price || b.price;
 
             switch (orderFor) {
                 case 'highlight':
-                    return 0; // Mantener orden original para destacados
+                    return 0;
                 case 'priceMin':
                     return priceA - priceB;
                 case 'priceMax':
@@ -58,13 +59,13 @@ function Products() {
                     return 0;
             }
         });
-    }, [products, models, minPrice, maxPrice, orderFor]);
+    }, [cases, models, minPrice, maxPrice, orderFor]);
 
     useEffect(() => {
         const fetchProducts = async () => {
             try {
                 setIsLoading(true);
-                const productsData = await getAllProductsFromSupabase();
+                const productsData = await getAllCases(); // Llamamos al servicio especializado en supabase
                 setProducts(productsData);
             } catch (error) {
                 console.error("Error fetching products:", error);
@@ -113,7 +114,9 @@ function Products() {
                     </button>
                 </div>
             ) : (
-                <ListProducts products={filteredProducts} />
+                <ListProducts 
+                    products={filteredProducts} 
+                />
             )}
         </section>
     );

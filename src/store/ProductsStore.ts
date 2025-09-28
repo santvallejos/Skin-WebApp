@@ -1,10 +1,11 @@
 import { create } from "zustand";
-import type { ProductModel } from "@/models/ProductModel";
+//import type { ProductModel } from "@/models/ProductModel";
+import type { CaseModel } from "@/models/ProductModel";
 
 export type sort = 'highlight' | 'priceMin' | 'priceMax' | 'az' | 'za'; // Opciones de ordenamiento
 
 interface productStore {
-    products: ProductModel[];
+    cases: CaseModel[];
     //search: string;
     minPrice: number;
     maxPrice: number;
@@ -12,7 +13,7 @@ interface productStore {
     orderFor: sort; // Ordenar Por
     isLoading: boolean;
 
-    setProducts: (productos: ProductModel[]) => void;       // Lista de productos
+    setProducts: (cases: CaseModel[]) => void;       // Lista de productos
     setOrderFor: (option: sort) => void;                    // Ordenar Por
     //setSearch: (search: string) => void;                  // Buscar por nombre
     setMinPrice: (minPrice: number) => void;                // Rango de precio minimo
@@ -23,16 +24,16 @@ interface productStore {
 }
 
 export const useProductStore = create<productStore>((set) => ({
-    // Inicializacion de variables
-    products: [],
+    /* Inicializar las variables */
+    cases: [],
     //search: '',
     minPrice: 1,
     maxPrice: 20000,
     models: [],
     orderFor: 'highlight', // Predeterminado
     isLoading: false,
-    setProducts: (products: ProductModel[]) => {
-        set({ products }); // Actualizar la lista de productos
+    setProducts: (cases: CaseModel[]) => {
+        set({ cases }); // Actualizar la lista de productos
     },
     setOrderFor: (option: sort) => {
         set({ orderFor: option});

@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import type { ProductModel } from '@/models/ProductModel';
-import { getProductByNameFromSupabase, getProductsRandomFromSupabase } from '@/services/SupabaseProductsService';
+import type { CaseModel, CaseStock } from '@/models/ProductModel';
 import { useCartStore } from '@/store/CartStore';
 import { deslugify } from '@/lib/deslugify';
 import Carousel from '@/components/Carousel';
 import { Skeleton } from '@/components/ui/skeleton';
 import ListProducts from '@/components/ListProducts';
 import NotProduct from './NotProduct';
+import { getCasesByName, getCasesRandom } from '@/services/ProductsServices';
 
 function Product() {
     const {
@@ -15,15 +15,15 @@ function Product() {
     } = useCartStore();
 
     const { name: slug } = useParams<{ name: string }>();
-    const [product, setProduct] = useState<ProductModel>();
+    const [product, setProduct] = useState<CaseModel>();
     const Quantity = useState<number>(1);
-    const [productsRandom, setProductsRandom] = useState<ProductModel[]>([]);
+    const [productsRandom, setProductsRandom] = useState<CaseModel[]>([]);
     const [selectModel, setSelectModel] = useState<{model: string, stock: number}>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [notFound, setNotFound] = useState<boolean>(false);
 
-    const handleAddCart = async (product: ProductModel) => {
-        const firstModelStock = product.modelStock.find(stock => stock.phone_model);
+    const handleAddCart = async (product: CaseModel) => {
+        const firstModelStock = product.modelStock.find((stock: CaseStock) => stock.phone_model); // Buscar el primer modelo con phone_model definido
         const productToCart = {
             id: product.id,
             name: product.name,
@@ -54,19 +54,21 @@ function Product() {
         if (nameOriginal) {
             const loadProduct = async () => {
                 try {
-                    const prodcutData = await getProductByNameFromSupabase(nameOriginal);
+                    const prodcutData = await getCasesByName(nameOriginal); 
                     setProduct(prodcutData);
 
                     //Seleccionar el primer modelo con stock disponible
-                    const firtsAvailableModel = prodcutData.modelStock.find(stock => stock.stock > 0);
+                    const firtsAvailableModel = prodcutData.modelStock.find((stock: CaseStock) => stock.stock > 0);
                     if (firtsAvailableModel && firtsAvailableModel.phone_model) {
+
+                        // setSelectedModel ahora recibe un objeto
                         setSelectModel({
                             model: firtsAvailableModel.phone_model.name,
                             stock: firtsAvailableModel.stock
                         });
                     }
 
-                    const randomProducts = await getProductsRandomFromSupabase(nameOriginal);
+                    const randomProducts = await getCasesRandom(nameOriginal);
                     setProductsRandom(randomProducts);
                     setNotFound(false);
                 } catch (error) {
@@ -223,4 +225,5 @@ function Product() {
     );
     }
 }
+
 export default Product;

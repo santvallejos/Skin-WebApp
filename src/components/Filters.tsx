@@ -41,7 +41,7 @@ function Filters() {
                     return;
                 }
 
-                const modelNames = data?.map(item => item.name) || [];
+                const modelNames = data?.map((item: { name: string }) => item.name) || [];
                 setAvailableModels(modelNames);
             } catch (error) {
                 console.error('Error fetching available models:', error);

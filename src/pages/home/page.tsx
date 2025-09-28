@@ -2,19 +2,21 @@ import Carousel from '../../components/Carousel';
 import AboutUs from '../../components/AboutUs';
 import AnimatedContent from '@/components/ui/AnimatedContent';
 import { useEffect, useState } from "react";
-import { getFeaturedProductsFromSupabase } from "@/services/SupabaseProductsService";
-import type { ProductModel } from "@/models/ProductModel";
+/* import { getFeaturedProductsFromSupabase } from "@/services/SupabaseProductsService";
+import type { ProductModel } from "@/models/ProductModel"; */
+import type { CaseModel } from '@/models/ProductModel';
+import { getFeaturedCases } from '@/services/ProductsServices';
 import ListProducts from '@/components/ListProducts';
 import carousel1 from '@/assets/carousel/carousel1.webp';
 import carousel2 from '@/assets/carousel/carousel2.webp';
 
 function Home() {
-    const [featuredProducts, setFeaturedProducts] = useState<ProductModel[]>([]);
+    const [featuredProducts, setFeaturedProducts] = useState<CaseModel[]>([]);
 
     useEffect(() => {
         const fetchFeatureProducts = async () => {
             try {
-                const featuredProductsData = await getFeaturedProductsFromSupabase();
+                const featuredProductsData = await getFeaturedCases();
                 setFeaturedProducts(featuredProductsData);
             } catch (error) {
                 console.error("Error fetching products:", error);

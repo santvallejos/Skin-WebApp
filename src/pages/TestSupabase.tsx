@@ -63,7 +63,7 @@ function Page() {
           console.error('Error fetching stock data:', stockError)
         } else {
           setCaseData(data || [])
-          setStockData(stockData || [])
+          setStockData((stockData || []) as unknown as Stock[])
           console.log('Cases data fetched successfully:', data)
           console.log('Stock data fetched successfully:', stockData)
         }
