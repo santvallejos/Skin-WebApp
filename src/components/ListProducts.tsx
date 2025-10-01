@@ -1,15 +1,14 @@
 import { Link } from "react-router-dom";
 import { slugify } from "@/lib/slugify";
-import type { ProductModel } from "@/models/ProductModel";
-
-interface ListPorductsProps {
-    products: ProductModel[];    // Productos pasados por props
+import type { CaseModel } from "@/models/ProductModel";
+interface ListProductsProps {
+    products: CaseModel[];    // Productos pasados por props
     className?: string;
 }
 
-function ListProducts({ products, className }: ListPorductsProps) {
+function ListProducts({ products, className }: ListProductsProps) {
     // Función para verificar si un producto tiene stock disponible
-    const hasStock = (product: ProductModel): boolean => {
+    const hasStock = (product: CaseModel): boolean => {
         return product.modelStock.some(stock => stock.stock > 0);
     };
 

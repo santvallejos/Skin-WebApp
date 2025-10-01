@@ -8,30 +8,43 @@ import { Skeleton } from '@/components/ui/skeleton';
 import ListProducts from '@/components/ListProducts';
 import NotProduct from './NotProduct';
 import { getCasesByName, getCasesRandom } from '@/services/ProductsServices';
+import { usePhoneModels } from '@/hooks/usePhoneModels';
 
 function Product() {
     const {
         addCart
     } = useCartStore();
 
+    const { models: availableModels } = usePhoneModels();
+
     const { name: slug } = useParams<{ name: string }>();
     const [product, setProduct] = useState<CaseModel>();
     const Quantity = useState<number>(1);
     const [productsRandom, setProductsRandom] = useState<CaseModel[]>([]);
-    const [selectModel, setSelectModel] = useState<{model: string, stock: number}>();
+    const [selectModel, setSelectModel] = useState<string>();
+    const [selectColor, setSelectColor] = useState<string>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [notFound, setNotFound] = useState<boolean>(false);
 
     const handleAddCart = async (product: CaseModel) => {
-        const firstModelStock = product.modelStock.find((stock: CaseStock) => stock.phone_model); // Buscar el primer modelo con phone_model definido
+        const selectedStock = product.modelStock.find((stock: CaseStock) => 
+            stock.phone_model?.name === selectModel && stock.color_hex === selectColor
+        );
+        
+        if (!selectedStock || selectedStock.stock === 0) {
+            alert('Por favor selecciona un modelo y color disponible');
+            return;
+        }
+        
         const productToCart = {
             id: product.id,
             name: product.name,
             images: product.images,
             price: product.price,
-            model: selectModel?.model || firstModelStock?.phone_model?.name || ''
+            model: selectModel || '',
+            color: selectColor
         }
-        addCart(productToCart, Quantity[0], selectModel?.stock || firstModelStock?.stock || 0);
+        addCart(productToCart, Quantity[0], selectedStock.stock);
     }
 
     const addQuantity = () => {
@@ -44,8 +57,14 @@ function Product() {
         }
     }
 
-    const handleSelectModel = (model: {model: string, stock: number}) => {
-        setSelectModel(model);
+    const handleSelectColor = (colorHex: string) => {
+        setSelectColor(colorHex);
+        // Reset model selection when color changes
+        setSelectModel(undefined);
+    }
+
+    const handleSelectModel = (modelName: string) => {
+        setSelectModel(modelName);
     }
 
     useEffect(() => {
@@ -57,15 +76,22 @@ function Product() {
                     const prodcutData = await getCasesByName(nameOriginal); 
                     setProduct(prodcutData);
 
-                    //Seleccionar el primer modelo con stock disponible
-                    const firtsAvailableModel = prodcutData.modelStock.find((stock: CaseStock) => stock.stock > 0);
-                    if (firtsAvailableModel && firtsAvailableModel.phone_model) {
-
-                        // setSelectedModel ahora recibe un objeto
-                        setSelectModel({
-                            model: firtsAvailableModel.phone_model.name,
-                            stock: firtsAvailableModel.stock
-                        });
+                    // Obtener el primer color disponible
+                    const firstAvailableStock = prodcutData.modelStock.find((stock: CaseStock) => 
+                        stock.stock > 0
+                    );
+                    
+                    if (firstAvailableStock) {
+                        setSelectColor(firstAvailableStock.color_hex);
+                        // Luego seleccionar el primer modelo disponible para ese color
+                        const firstModelForColor = prodcutData.modelStock.find((stock: CaseStock) => 
+                            stock.color_hex === firstAvailableStock.color_hex && 
+                            stock.stock > 0 && 
+                            stock.phone_model
+                        );
+                        if (firstModelForColor?.phone_model) {
+                            setSelectModel(firstModelForColor.phone_model.name);
+                        }
                     }
 
                     const randomProducts = await getCasesRandom(nameOriginal);
@@ -84,6 +110,52 @@ function Product() {
             setIsLoading(false);
         }
     }, [slug, setIsLoading]);
+
+    // Obtener todos los colores únicos disponibles para este producto
+    const getAvailableColors = () => {
+        if (!product) return [];
+        
+        const colorsMap = new Map<string, number>();
+        
+        product.modelStock.forEach(stock => {
+            if (stock.stock > 0) {
+                const currentStock = colorsMap.get(stock.color_hex) || 0;
+                colorsMap.set(stock.color_hex, currentStock + stock.stock);
+            }
+        });
+        
+        return Array.from(colorsMap.entries()).map(([hex, totalStock]) => ({
+            hex,
+            stock: totalStock
+        }));
+    };
+
+    // Obtener modelos disponibles para el color seleccionado
+    const getAvailableModels = () => {
+        if (!product) return [];
+        
+        // Obtener todos los modelos únicos que existen en este producto
+        const productModelNames = new Set<string>();
+        product.modelStock.forEach(stock => {
+            if (stock.phone_model) {
+                productModelNames.add(stock.phone_model.name);
+            }
+        });
+        
+        // Retornar todos los modelos del array principal que existen en este producto
+        return availableModels.filter(model => productModelNames.has(model));
+    };
+
+    // Verificar si una combinación modelo+color tiene stock
+    const hasStock = (modelName: string, colorHex?: string) => {
+        if (!product) return false;
+        
+        return product.modelStock.some(stock => 
+            stock.phone_model?.name === modelName &&
+            (colorHex ? stock.color_hex === colorHex : true) &&
+            stock.stock > 0
+        );
+    };
 
     if (notFound) {
         return <NotProduct />
@@ -158,39 +230,64 @@ function Product() {
                                 <p className="text-sm text-green-600 font-medium mt-2">Envío gratis superando los $35.000</p>
                             </div>
 
+                            {/* Color Selection */}
+                            <div className="mb-6">
+                                <h3 className="text-lg font-semibold mb-3">COLOR:</h3>
+                                <div className="flex flex-wrap gap-3">
+                                    {getAvailableColors().map((colorInfo) => (
+                                        <button
+                                            key={colorInfo.hex}
+                                            className={`w-12 h-12 rounded-full border-4 transition-all ${
+                                                selectColor === colorInfo.hex
+                                                    ? 'border-indigo-500 scale-110'
+                                                    : 'border-gray-300 hover:border-gray-400'
+                                            }`}
+                                            style={{ backgroundColor: colorInfo.hex }}
+                                            onClick={() => handleSelectColor(colorInfo.hex)}
+                                            title={`Color ${colorInfo.hex} - Stock total: ${colorInfo.stock}`}
+                                        />
+                                    ))}
+                                </div>
+                                {selectColor && (
+                                    <p className="text-sm text-gray-600 mt-2">
+                                        Color seleccionado: {selectColor}
+                                    </p>
+                                )}
+                            </div>
+
                             {/* Model Selection */}
                             <div className="mb-6">
                                 <h3 className="text-lg font-semibold mb-3">MODELO:</h3>
                                 <div className="grid grid-cols-4 gap-2">
-                                    {product?.modelStock.map((stockItem, idx) => (
-                                        <button
-                                            key={idx}
-                                            className={`px-1 py-1 border rounded text-sm transition-colors lg:h-14 h-full ${
-                                                stockItem.stock === 0 
-                                                    ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed' 
-                                                    : selectModel?.model === stockItem.phone_model?.name
-                                                    ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
-                                                    : 'border-gray-300 hover:border-indigo-500'
-                                            }`}
-                                            disabled={stockItem.stock === 0 || !stockItem.phone_model}
-                                            onClick={() => stockItem.stock > 0 && stockItem.phone_model && handleSelectModel({
-                                                model: stockItem.phone_model.name,
-                                                stock: stockItem.stock
-                                            })}
-                                        >
-                                            {stockItem.phone_model?.name}
-                                            {stockItem.stock === 0 && (
-                                                <span className="block text-xs mt-1">Sin stock</span>
-                                            )}
-                                            {selectModel?.model === stockItem.phone_model?.name && stockItem.stock > 0 && (
-                                                <span className="block text-xs mt-1 text-indigo-600">Seleccionado</span>
-                                            )}
-                                        </button>
-                                    ))}
+                                    {getAvailableModels().map((modelName) => {
+                                        const modelHasStock = selectColor ? hasStock(modelName, selectColor) : hasStock(modelName);
+                                        return (
+                                            <button
+                                                key={modelName}
+                                                className={`px-1 py-1 border rounded text-sm transition-colors lg:h-14 h-full ${
+                                                    !modelHasStock
+                                                        ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed' 
+                                                        : selectModel === modelName
+                                                        ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
+                                                        : 'border-gray-300 hover:border-indigo-500'
+                                                }`}
+                                                disabled={!modelHasStock}
+                                                onClick={() => modelHasStock && handleSelectModel(modelName)}
+                                            >
+                                                {modelName}
+                                                {!modelHasStock && (
+                                                    <span className="block text-xs mt-1">
+                                                        {selectColor ? 'No disponible en este color' : 'Sin stock'}
+                                                    </span>
+                                                )}
+                                                {selectModel === modelName && modelHasStock && (
+                                                    <span className="block text-xs mt-1 text-indigo-600">Seleccionado</span>
+                                                )}
+                                            </button>
+                                        );
+                                    })}
                                 </div>
-                            </div>
-
-                            {/* Quantity and Add to Cart */}
+                            </div>                            {/* Quantity and Add to Cart */}
                             <div className="flex items-center gap-4 mb-6">
                                 <div className="flex items-center border border-gray-300 rounded">
                                     <button className="px-3 py-2 hover:bg-gray-100" onClick={removeQuantity}>-</button>
@@ -198,10 +295,18 @@ function Product() {
                                     <button className="px-3 py-2 hover:bg-gray-100" onClick={addQuantity}>+</button>
                                 </div>
                                 <button
-                                    className="flex-1 bg-red-500 text-white py-3 px-6 rounded font-medium hover:bg-red-600 transition-colors"
+                                    className={`flex-1 py-3 px-6 rounded font-medium transition-colors ${
+                                        selectModel && selectColor
+                                            ? 'bg-red-500 text-white hover:bg-red-600'
+                                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                    }`}
                                     onClick={() => product && handleAddCart(product)}
+                                    disabled={!selectModel || !selectColor}
                                 >
-                                    Agregar al carrito
+                                    {!selectModel || !selectColor 
+                                        ? 'Selecciona modelo y color' 
+                                        : 'Agregar al carrito'
+                                    }
                                 </button>
                             </div>
 

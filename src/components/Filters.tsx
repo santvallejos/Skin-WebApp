@@ -8,13 +8,12 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { useProductStore } from "@/store/ProductsStore";
 import type { sort } from "@/store/ProductsStore";
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Button } from "@/components/ui/button";
-import supabase from "@/lib/supabase";
+import { usePhoneModels } from "@/hooks/usePhoneModels";
 
 function Filters() {
     const {
-        products,
         orderFor,
         setOrderFor,
         models,
@@ -24,49 +23,13 @@ function Filters() {
         clearFilters
     } = useProductStore();
 
+    const { models: availableModels, loading: modelsLoading } = usePhoneModels();
     const [isExpanded, setIsExpanded] = useState(false);
-    const [availableModels, setAvailableModels] = useState<string[]>([]);
 
-    // Obtener modelos disponibles desde Supabase
-    useEffect(() => {
-        const fetchAvailableModels = async () => {
-            try {
-                const { data, error } = await supabase
-                    .from('phone_model')
-                    .select('name')
-                    .order('name');
-
-                if (error) {
-                    console.error('Error fetching phone models:', error);
-                    return;
-                }
-
-                const modelNames = data?.map((item: { name: string }) => item.name) || [];
-                setAvailableModels(modelNames);
-            } catch (error) {
-                console.error('Error fetching available models:', error);
-            }
-        };
-
-        fetchAvailableModels();
-    }, []);
-
-    // Filtrar solo modelos que tienen stock disponible
+    // Usar todos los modelos disponibles
     const modelsWithStock = useMemo(() => {
-        if (!products || products.length === 0) return availableModels;
-
-        const modelsInStock = new Set<string>();
-        
-        products.forEach(product => {
-            product.modelStock.forEach(stock => {
-                if (stock.stock > 0 && stock.phone_model) {
-                    modelsInStock.add(stock.phone_model.name);
-                }
-            });
-        });
-
-        return availableModels.filter(model => modelsInStock.has(model));
-    }, [products, availableModels]);
+        return availableModels;
+    }, [availableModels]);
     
 
     // Cambiar el ordenamiento
@@ -110,30 +73,34 @@ function Filters() {
                                 </select>
 
                                 <SheetTitle className="pt-4">Modelo</SheetTitle>
-                                <div className="flex flex-col gap-2">
-                                {modelsWithStock
-                                    .slice(0, isExpanded ? modelsWithStock.length : 5)
-                                    .map((value) => (
-                                        <div key={value} className="flex items-center gap-2">
-                                            <Checkbox
-                                                className="cursor-pointer" 
-                                                id={value}
-                                                checked={models.includes(value)}
-                                                onCheckedChange={() => handleModelChange(value)}
-                                            />
-                                            <label htmlFor={value}>{value}</label>
-                                        </div>
-                                    ))
-                                }
-                                {modelsWithStock.length > 5 && (
-                                    <button
-                                        className="text-blue-500 mt-2 text-left cursor-pointer"
-                                        onClick={() => setIsExpanded(!isExpanded)}
-                                    >
-                                        {isExpanded ? 'Ver menos' : 'Ver más'}
-                                    </button>
+                                {modelsLoading ? (
+                                    <div className="text-gray-500">Cargando modelos...</div>
+                                ) : (
+                                    <div className="flex flex-col gap-2">
+                                    {modelsWithStock
+                                        .slice(0, isExpanded ? modelsWithStock.length : 5)
+                                        .map((value) => (
+                                            <div key={value} className="flex items-center gap-2">
+                                                <Checkbox
+                                                    className="cursor-pointer" 
+                                                    id={value}
+                                                    checked={models.includes(value)}
+                                                    onCheckedChange={() => handleModelChange(value)}
+                                                />
+                                                <label htmlFor={value}>{value}</label>
+                                            </div>
+                                        ))
+                                    }
+                                    {modelsWithStock.length > 5 && (
+                                        <button
+                                            className="text-blue-500 mt-2 text-left cursor-pointer"
+                                            onClick={() => setIsExpanded(!isExpanded)}
+                                        >
+                                            {isExpanded ? 'Ver menos' : 'Ver más'}
+                                        </button>
+                                    )}
+                                    </div>
                                 )}
-                                </div>
 
                                 <SheetTitle className="pt-4">Precio Máximo:</SheetTitle>
                                 <div className="flex items-center gap-2">

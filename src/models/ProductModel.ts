@@ -28,4 +28,5 @@ export interface CaseModel {
 /* Product to cart interface */
 export interface ProductToCart extends Pick<CaseModel, 'id' | 'name' | 'images' | 'price'> {
     model: string;
+    color?: string;
 }
