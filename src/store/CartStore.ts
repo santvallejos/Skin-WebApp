@@ -30,10 +30,10 @@ const toastErrorAddProduct = () => toast.error("No hay stock disponible", {
     });
 
 interface cartStore {
-    items: CartItem[]; // Lista de productos en el carrito
+    items: CartItem[]; // List products in cart
 
     // Funciones para manipular el carrito
-    addCart: (product: ProductToCart, quantity: number, stock: number) => void;                 // Agregar un producto al carrito
+    addCart: (product: ProductToCart, quantity: number, stock: number) => void;  // Agregar un producto al carrito
     removeCart: (id: string) => void;                                            // Remover un producto del carrito
     updateQuantity: (id: string, quantity: number) => void;                      // Actualizar la cantidad de un producto en el carrito
     clearCart: () => void;                                                       // Limpiar el carrito

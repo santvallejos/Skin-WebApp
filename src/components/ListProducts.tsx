@@ -2,22 +2,15 @@ import { Link } from "react-router-dom";
 import { slugify } from "@/lib/slugify";
 import type { CaseModel } from "@/models/ProductModel";
 interface ListProductsProps {
-    products: CaseModel[];    // Productos pasados por props
+    products: CaseModel[];
     className?: string;
 }
 
 function ListProducts({ products, className }: ListProductsProps) {
-    // Función para verificar si un producto tiene stock disponible
-    const hasStock = (product: CaseModel): boolean => {
-        return product.modelStock.some(stock => stock.stock > 0);
-    };
-
     return (
         <div className={`p-5 ${className}`}>
             <ul className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                 {products.map((product) => {
-                    const productHasStock = hasStock(product);
-                    
                     return (
                         <li
                             key={product.id}
@@ -41,9 +34,8 @@ function ListProducts({ products, className }: ListProductsProps) {
                                             className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500"
                                         />
                                     )}
-                                    
-                                    {/* Etiqueta de Sin Stock en esquina superior derecha */}
-                                    {!productHasStock && (
+
+                                    {!product.stock && (
                                         <div className="absolute top-2 right-2 z-10">
                                             <span className="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold uppercase tracking-wide shadow-lg">
                                                 Sin Stock

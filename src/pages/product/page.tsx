@@ -26,6 +26,11 @@ function Product() {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [notFound, setNotFound] = useState<boolean>(false);
 
+    /**
+     * Add product to cart
+     * 
+     * @param product Product to add
+     */
     const handleAddCart = async (product: CaseModel) => {
         const selectedStock = product.modelStock.find((stock: CaseStock) => 
             stock.phone_model?.name === selectModel && stock.color_hex === selectColor
@@ -47,25 +52,100 @@ function Product() {
         addCart(productToCart, Quantity[0], selectedStock.stock);
     }
 
+    /**
+     * Add quantity
+     */
     const addQuantity = () => {
         Quantity[1](Quantity[0] + 1);
     }
 
+    /**
+     * Remove quantity
+     */
     const removeQuantity = () => {
         if (Quantity[0] > 1) {
             Quantity[1](Quantity[0] - 1);
         }
     }
 
+    /**
+     * Handle select color
+     * 
+     * @param colorHex Color hex to select
+     */
     const handleSelectColor = (colorHex: string) => {
         setSelectColor(colorHex);
         // Reset model selection when color changes
         setSelectModel(undefined);
     }
 
+    /**
+     * Handle select model
+     * 
+     * @param modelName Model name to select
+     */
     const handleSelectModel = (modelName: string) => {
         setSelectModel(modelName);
     }
+
+        /**
+     * Get available colors with stock
+     * 
+     * @return Array of colors with stock
+    */
+    const getAvailableColors = () => {
+        if (!product) return [];
+        
+        const colorsMap = new Map<string, number>();
+        
+        product.modelStock.forEach(stock => {
+            if (stock.stock > 0) {
+                const currentStock = colorsMap.get(stock.color_hex) || 0;
+                colorsMap.set(stock.color_hex, currentStock + stock.stock);
+            }
+        });
+        
+        return Array.from(colorsMap.entries()).map(([hex, totalStock]) => ({
+            hex,
+            stock: totalStock
+        }));
+    };
+
+    /**
+     * Get available models for the product
+     * 
+     * @returns Array of available models for the product
+     */
+    const getAvailableModels = () => {
+        if (!product) return [];
+        
+        
+        const productModelNames = new Set<string>();
+        product.modelStock.forEach(stock => {
+            if (stock.phone_model) {
+                productModelNames.add(stock.phone_model.name);
+            }
+        });
+        
+        return availableModels.filter(model => productModelNames.has(model));
+    };
+
+    /**
+     * Check if a specific model and color combination is in stock
+     * 
+     * @param modelName Model name to check
+     * @param colorHex Color hex to check
+     * @returns True if the model and color combination is in stock, false otherwise
+     */
+    const hasStock = (modelName: string, colorHex?: string) => {
+        if (!product) return false;
+        
+        return product.modelStock.some(stock => 
+            stock.phone_model?.name === modelName &&
+            (colorHex ? stock.color_hex === colorHex : true) &&
+            stock.stock > 0
+        );
+    };
 
     useEffect(() => {
         const nameOriginal = slug ? deslugify(slug) : '';
@@ -110,52 +190,6 @@ function Product() {
             setIsLoading(false);
         }
     }, [slug, setIsLoading]);
-
-    // Obtener todos los colores únicos disponibles para este producto
-    const getAvailableColors = () => {
-        if (!product) return [];
-        
-        const colorsMap = new Map<string, number>();
-        
-        product.modelStock.forEach(stock => {
-            if (stock.stock > 0) {
-                const currentStock = colorsMap.get(stock.color_hex) || 0;
-                colorsMap.set(stock.color_hex, currentStock + stock.stock);
-            }
-        });
-        
-        return Array.from(colorsMap.entries()).map(([hex, totalStock]) => ({
-            hex,
-            stock: totalStock
-        }));
-    };
-
-    // Obtener modelos disponibles para el color seleccionado
-    const getAvailableModels = () => {
-        if (!product) return [];
-        
-        // Obtener todos los modelos únicos que existen en este producto
-        const productModelNames = new Set<string>();
-        product.modelStock.forEach(stock => {
-            if (stock.phone_model) {
-                productModelNames.add(stock.phone_model.name);
-            }
-        });
-        
-        // Retornar todos los modelos del array principal que existen en este producto
-        return availableModels.filter(model => productModelNames.has(model));
-    };
-
-    // Verificar si una combinación modelo+color tiene stock
-    const hasStock = (modelName: string, colorHex?: string) => {
-        if (!product) return false;
-        
-        return product.modelStock.some(stock => 
-            stock.phone_model?.name === modelName &&
-            (colorHex ? stock.color_hex === colorHex : true) &&
-            stock.stock > 0
-        );
-    };
 
     if (notFound) {
         return <NotProduct />

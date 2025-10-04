@@ -1,36 +1,35 @@
 import { create } from "zustand";
-//import type { ProductModel } from "@/models/ProductModel";
 import type { CaseModel } from "@/models/ProductModel";
 
-export type sort = 'highlight' | 'priceMin' | 'priceMax' | 'az' | 'za'; // Opciones de ordenamiento
+export type sort = 'highlight' | 'priceMin' | 'priceMax' | 'az' | 'za'; // Types of order
 
-interface productStore {
+interface filterStore {
     cases: CaseModel[];
     //search: string;
     minPrice: number;
     maxPrice: number;
     models: string[];
-    orderFor: sort; // Ordenar Por
+    orderFor: sort;
     isLoading: boolean;
 
-    setProducts: (cases: CaseModel[]) => void;       // Lista de productos
-    setOrderFor: (option: sort) => void;                    // Ordenar Por
-    //setSearch: (search: string) => void;                  // Buscar por nombre
-    setMinPrice: (minPrice: number) => void;                // Rango de precio minimo
-    setMaxPrice: (maxPrice: number) => void;                // Rango de precio maximo
-    setModels: (models: string[]) => void;                  // Modelos
+    setProducts: (cases: CaseModel[]) => void;              // List products
+    setOrderFor: (option: sort) => void;                    // for order
+    //setSearch: (search: string) => void;                  // Search for product by name
+    setMinPrice: (minPrice: number) => void;                // Range of min price
+    setMaxPrice: (maxPrice: number) => void;                // Range of max price
+    setModels: (models: string[]) => void;                  // Models
     clearFilters: () => void;
     setIsLoading: (isLoading: boolean) => void;
 }
 
-export const useProductStore = create<productStore>((set) => ({
+export const useFilterStore = create<filterStore>((set) => ({
     /* Inicializar las variables */
     cases: [],
     //search: '',
     minPrice: 1,
     maxPrice: 20000,
     models: [],
-    orderFor: 'highlight', // Predeterminado
+    orderFor: 'highlight', // Default filter
     isLoading: false,
     setProducts: (cases: CaseModel[]) => {
         set({ cases }); // Actualizar la lista de productos

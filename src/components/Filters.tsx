@@ -6,8 +6,8 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet"
 import { Checkbox } from "@/components/ui/checkbox";
-import { useProductStore } from "@/store/ProductsStore";
-import type { sort } from "@/store/ProductsStore";
+import { useFilterStore } from "@/store/FilterStore";
+import type { sort } from "@/store/FilterStore";
 import { useState, useMemo } from 'react';
 import { Button } from "@/components/ui/button";
 import { usePhoneModels } from "@/hooks/usePhoneModels";
@@ -21,7 +21,7 @@ function Filters() {
         maxPrice,
         setMaxPrice,
         clearFilters
-    } = useProductStore();
+    } = useFilterStore();
 
     const { models: availableModels, loading: modelsLoading } = usePhoneModels();
     const [isExpanded, setIsExpanded] = useState(false);

@@ -1,14 +1,14 @@
 import { useEffect, useMemo } from "react";
 //import { getAllProductsFromSupabase } from "@/services/SupabaseProductsService"; //Servicio creado aparte para supabase
 import { getAllCases } from "@/services/ProductsServices";
-import { useProductStore } from "@/store/ProductsStore";
+import { useFilterStore } from "@/store/FilterStore";
 import { Skeleton } from "@/components/ui/skeleton";
 import ListProducts from "@/components/ListProducts";
 import Filters from "@/components/Filters";
 
 function Products() {
     const {
-        cases, // Ya manejamos en un estado global los productos
+        cases,
         orderFor,
         models,
         minPrice,
@@ -17,15 +17,17 @@ function Products() {
         clearFilters,
         isLoading,
         setIsLoading
-    } = useProductStore();
+    } = useFilterStore();
 
-    // Aplicar filtros y ordenamiento
+    /* 
+    * Apply filters and sorting to the products
+    */
     const filteredProducts = useMemo(() => {
-        if (!cases || cases.length === 0) return []; // Manejar caso cuando no hay productos
+        if (!cases || cases.length === 0) return []; // If no products, return empty array
 
         return [...cases].filter(product => {
 
-            // Filtrar por modelos - verificar si algún stock coincide con los modelos seleccionados
+            // Filter by models - check if any stock matches the selected models
             const matchesModels = models.length === 0 || 
                 product.modelStock.some(stock => 
                     stock.phone_model && 
@@ -33,14 +35,14 @@ function Products() {
                     stock.stock > 0
                 );
 
-            // Filtrar por precio
-            const productPrice = product.new_price || product.price;
+            // Filter by price
+            const productPrice = product.new_price || product.price; // If the product has a discount, use the new price, else use the original price
             const matchesPrice = productPrice >= minPrice && productPrice <= maxPrice;
 
             return matchesModels && matchesPrice;
         }).sort((a, b) => {
 
-            // Ordenar según el criterio seleccionado
+            // Order the products based on the selected criteria
             const priceA = a.new_price || a.price;
             const priceB = b.new_price || b.price;
 
@@ -65,7 +67,7 @@ function Products() {
         const fetchProducts = async () => {
             try {
                 setIsLoading(true);
-                const productsData = await getAllCases(); // Llamamos al servicio especializado en supabase
+                const productsData = await getAllCases(); // Fetch products from Supabase
                 setProducts(productsData);
             } catch (error) {
                 console.error("Error fetching products:", error);

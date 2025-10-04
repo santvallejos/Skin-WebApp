@@ -3,10 +3,9 @@ import type { CaseModel } from "@/models/ProductModel";
 
 export const getAllCases = async (): Promise<CaseModel[]> => {
     try {
-        /* Consulta a supabase a la tabla cases */
+        /* Consultation to Supabase in the cases table */
         const { data, error } = await supabase
             .from('cases')
-            /* Pudes haber problemas por el *, si no especificar cada columna de la tabla */
             .select(`
                 id,
                 name,
@@ -29,7 +28,7 @@ export const getAllCases = async (): Promise<CaseModel[]> => {
 
         if (error) throw new Error(`Error trayendo los productos: ${error?.message}`);
 
-        // Transformar los datos para que coincidan con ProductModel
+        // Transform the date to match ProductModel
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const cases: CaseModel[] = (data || []).map((caseItem: any) => ({
             id: caseItem.id,
@@ -89,7 +88,7 @@ export const getFeaturedCases = async (): Promise<CaseModel[]> => {
 
         if (error) throw new Error(`Error trayendo los productos destacados: ${error?.message}`);
 
-        // Transformar los datos para que coincidan con ProductModel
+        // Transform the date to match ProductModel
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const cases: CaseModel[] = (data || []).map((caseItem: any) => ({
             id: caseItem.id,

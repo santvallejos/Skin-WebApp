@@ -21,7 +21,7 @@ export interface CaseModel {
     new_price: number | null;
     images: string[];
     stock: boolean;
-    // Stock por modelo
+    // Stock by model
     modelStock: CaseStock[];
 }
 

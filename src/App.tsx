@@ -1,5 +1,5 @@
 import Home from './pages/home/page';
-import Products from './pages/products/page';
+import Products from './pages/list products/page';
 import Contact from './pages/contact/page';
 import Layaout from './Layaout';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
