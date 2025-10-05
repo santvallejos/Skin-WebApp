@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import type { CaseModel, CaseStock } from '@/models/ProductModel';
 import { useCartStore } from '@/store/CartStore';
 import { deslugify } from '@/lib/deslugify';
-import { getColorName } from '@/mappers/colorMapper';
+import { getColorName } from '../../mappers/ColorMapper';
 import Carousel from '@/components/Carousel';
 import { Skeleton } from '@/components/ui/skeleton';
 import ListProducts from '@/components/ListProducts';
