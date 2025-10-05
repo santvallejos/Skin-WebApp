@@ -3,18 +3,17 @@
  */
 const COLOR_MAP: Record<string, string> = {
   '#ea899a': 'Rosa',
-  '#ae807d': 'Rosa Empolvado',
-  '#8b0000': 'Rojo Oscuro',
-  '#6f0202': 'Rojo Granate',
-  '#e3e4e5': 'Gris Claro',
-  '#e3e4a5': 'Amarillo Claro',
-  '#8d1f81': 'Púrpura',
+  '#ae807d': 'Rosa Viejo',
+  '#8b0000': 'Rojo',
+  '#6f0202': 'Cherry',
+  '#e3e4e5': 'Plateado',
+  '#e3e4a5': 'Dorado',
+  '#8d1f81': 'Fucsia',
   '#000000': 'Negro',
-  '#572364': 'Morado Oscuro',
+  '#572364': 'Morado',
   '#474b4e': 'Gris Oscuro',
   '#afb810': 'Verde Lima',
-  '#afd4c0': 'Verde Menta',
-  '#ea899a': 'Rosa Claro'
+  '#afd4c0': 'Verde',
 };
 
 /**
