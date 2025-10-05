@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import type { CaseModel, CaseStock } from '@/models/ProductModel';
 import { useCartStore } from '@/store/CartStore';
 import { deslugify } from '@/lib/deslugify';
+import { getColorName } from '@/lib/colorMapper';
 import Carousel from '@/components/Carousel';
 import { Skeleton } from '@/components/ui/skeleton';
 import ListProducts from '@/components/ListProducts';
@@ -63,7 +64,7 @@ function Product() {
             images: product.images,
             price: product.price,
             model: selectModel || '',
-            color: hasColorVariations() ? selectColor : undefined
+            color: hasColorVariations() ? getColorName(selectColor) : undefined
         }
         addCart(productToCart, Quantity[0], selectedStock.stock);
     }
@@ -133,6 +134,7 @@ function Product() {
             .filter(([hex]) => hex !== 'no-color')
             .map(([hex, totalStock]) => ({
                 hex,
+                name: getColorName(hex),
                 stock: totalStock
             }));
     };
@@ -311,13 +313,13 @@ function Product() {
                                                 }`}
                                                 style={{ backgroundColor: colorInfo.hex }}
                                                 onClick={() => handleSelectColor(colorInfo.hex)}
-                                                title={`Color ${colorInfo.hex} - Stock total: ${colorInfo.stock}`}
+                                                title={`${colorInfo.name} - Stock total: ${colorInfo.stock}`}
                                             />
                                         ))}
                                     </div>
                                     {selectColor && (
                                         <p className="text-sm text-gray-600 mt-2">
-                                            Color seleccionado: {selectColor}
+                                            Color seleccionado: {getColorName(selectColor)}
                                         </p>
                                     )}
                                 </div>
