@@ -23,7 +23,10 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
     const messageLines = [
       "Buenas Skin!",
       "Quiero realizar un pedido de la/s siguiente/s funda/s:",
-      ...items.map(item => `* ${item.product.name} - ${item.product.model} (x${item.quantity})`),
+      ...items.map(item => {
+        const colorText = item.product.color ? ` - Color: ${item.product.color}` : '';
+        return `* ${item.product.name} - ${item.product.model}${colorText} (x${item.quantity})`;
+      }),
     ];
     const message = messageLines.join('\n');
     const encodedMessage = encodeURIComponent(message);
@@ -88,6 +91,7 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
                       <div className="flex-1 min-w-0">
                         <h3 className="text-sm font-medium text-gray-900 line-clamp-2">
                           {item.product.name} - {item.product.model}
+                          {item.product.color && ` - ${item.product.color}`}
                         </h3>
                         <p className="text-sm text-gray-600 mt-1">
                           ${item.product.price} c/u

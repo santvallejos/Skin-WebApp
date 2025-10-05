@@ -27,17 +27,33 @@ function Product() {
     const [notFound, setNotFound] = useState<boolean>(false);
 
     /**
+     * Check if the product has color variations
+     * 
+     * @returns True if the product has color variations, false otherwise
+     */
+    const hasColorVariations = () => {
+        if (!product) return false;
+        
+        return product.modelStock.some(stock => stock.color_hex !== null && stock.stock > 0);
+    };
+
+    /**
      * Add product to cart
      * 
      * @param product Product to add
      */
     const handleAddCart = async (product: CaseModel) => {
-        const selectedStock = product.modelStock.find((stock: CaseStock) => 
-            stock.phone_model?.name === selectModel && stock.color_hex === selectColor
-        );
-        
+        // Para productos sin variaciones de color, buscar stock sin considerar color
+        const selectedStock = hasColorVariations() 
+            ? product.modelStock.find((stock: CaseStock) => 
+                stock.phone_model?.name === selectModel && stock.color_hex === selectColor
+              )
+            : product.modelStock.find((stock: CaseStock) => 
+                stock.phone_model?.name === selectModel && stock.color_hex === null
+              );
+
         if (!selectedStock || selectedStock.stock === 0) {
-            alert('Por favor selecciona un modelo y color disponible');
+            alert('Por favor selecciona un modelo disponible');
             return;
         }
         
@@ -47,7 +63,7 @@ function Product() {
             images: product.images,
             price: product.price,
             model: selectModel || '',
-            color: selectColor
+            color: hasColorVariations() ? selectColor : undefined
         }
         addCart(productToCart, Quantity[0], selectedStock.stock);
     }
@@ -91,7 +107,7 @@ function Product() {
         /**
      * Get available colors with stock
      * 
-     * @return Array of colors with stock
+     * @return Array of colors with stock, or empty array if product has no colors
     */
     const getAvailableColors = () => {
         if (!product) return [];
@@ -100,41 +116,41 @@ function Product() {
         
         product.modelStock.forEach(stock => {
             if (stock.stock > 0) {
-                const currentStock = colorsMap.get(stock.color_hex) || 0;
-                colorsMap.set(stock.color_hex, currentStock + stock.stock);
+                // Si color_hex es null, significa que la funda no tiene color
+                const colorKey = stock.color_hex || 'no-color';
+                const currentStock = colorsMap.get(colorKey) || 0;
+                colorsMap.set(colorKey, currentStock + stock.stock);
             }
         });
         
-        return Array.from(colorsMap.entries()).map(([hex, totalStock]) => ({
-            hex,
-            stock: totalStock
-        }));
+        // Si solo hay productos sin color, retornar array vacío para indicar que no hay selección de color
+        if (colorsMap.size === 1 && colorsMap.has('no-color')) {
+            return [];
+        }
+        
+        // Filtrar solo los colores reales (no null)
+        return Array.from(colorsMap.entries())
+            .filter(([hex]) => hex !== 'no-color')
+            .map(([hex, totalStock]) => ({
+                hex,
+                stock: totalStock
+            }));
     };
 
     /**
-     * Get available models for the product
+     * Get all available models in the system (not just those with stock for this product)
      * 
-     * @returns Array of available models for the product
+     * @returns Array of all available models in the system
      */
     const getAvailableModels = () => {
-        if (!product) return [];
-        
-        
-        const productModelNames = new Set<string>();
-        product.modelStock.forEach(stock => {
-            if (stock.phone_model) {
-                productModelNames.add(stock.phone_model.name);
-            }
-        });
-        
-        return availableModels.filter(model => productModelNames.has(model));
+        return availableModels;
     };
 
     /**
      * Check if a specific model and color combination is in stock
      * 
      * @param modelName Model name to check
-     * @param colorHex Color hex to check
+     * @param colorHex Color hex to check (optional for products without color)
      * @returns True if the model and color combination is in stock, false otherwise
      */
     const hasStock = (modelName: string, colorHex?: string) => {
@@ -142,7 +158,10 @@ function Product() {
         
         return product.modelStock.some(stock => 
             stock.phone_model?.name === modelName &&
-            (colorHex ? stock.color_hex === colorHex : true) &&
+            (hasColorVariations() 
+                ? (colorHex ? stock.color_hex === colorHex : true)
+                : stock.color_hex === null || stock.color_hex === colorHex
+            ) &&
             stock.stock > 0
         );
     };
@@ -156,21 +175,34 @@ function Product() {
                     const prodcutData = await getCasesByName(nameOriginal); 
                     setProduct(prodcutData);
 
-                    // Obtener el primer color disponible
-                    const firstAvailableStock = prodcutData.modelStock.find((stock: CaseStock) => 
-                        stock.stock > 0
-                    );
-                    
-                    if (firstAvailableStock) {
-                        setSelectColor(firstAvailableStock.color_hex);
-                        // Luego seleccionar el primer modelo disponible para ese color
-                        const firstModelForColor = prodcutData.modelStock.find((stock: CaseStock) => 
-                            stock.color_hex === firstAvailableStock.color_hex && 
-                            stock.stock > 0 && 
-                            stock.phone_model
+                    // Si el producto tiene variaciones de color
+                    if (prodcutData.modelStock.some(stock => stock.color_hex !== null && stock.stock > 0)) {
+                        // Obtener el primer color disponible
+                        const firstAvailableStock = prodcutData.modelStock.find((stock: CaseStock) => 
+                            stock.stock > 0 && stock.color_hex !== null
                         );
-                        if (firstModelForColor?.phone_model) {
-                            setSelectModel(firstModelForColor.phone_model.name);
+                        
+                        if (firstAvailableStock) {
+                            setSelectColor(firstAvailableStock.color_hex);
+                            // Luego seleccionar el primer modelo disponible para ese color
+                            const firstModelForColor = prodcutData.modelStock.find((stock: CaseStock) => 
+                                stock.color_hex === firstAvailableStock.color_hex && 
+                                stock.stock > 0 && 
+                                stock.phone_model
+                            );
+                            if (firstModelForColor?.phone_model) {
+                                setSelectModel(firstModelForColor.phone_model.name);
+                            }
+                        }
+                    } else {
+                        // Si el producto no tiene variaciones de color, solo seleccionar el primer modelo disponible
+                        const firstAvailableStock = prodcutData.modelStock.find((stock: CaseStock) => 
+                            stock.stock > 0 && stock.color_hex === null && stock.phone_model
+                        );
+                        
+                        if (firstAvailableStock?.phone_model) {
+                            setSelectModel(firstAvailableStock.phone_model.name);
+                            setSelectColor(undefined); // No hay color para seleccionar
                         }
                     }
 
@@ -264,37 +296,41 @@ function Product() {
                                 <p className="text-sm text-green-600 font-medium mt-2">Envío gratis superando los $35.000</p>
                             </div>
 
-                            {/* Color Selection */}
-                            <div className="mb-6">
-                                <h3 className="text-lg font-semibold mb-3">COLOR:</h3>
-                                <div className="flex flex-wrap gap-3">
-                                    {getAvailableColors().map((colorInfo) => (
-                                        <button
-                                            key={colorInfo.hex}
-                                            className={`w-12 h-12 rounded-full border-4 transition-all ${
-                                                selectColor === colorInfo.hex
-                                                    ? 'border-indigo-500 scale-110'
-                                                    : 'border-gray-300 hover:border-gray-400'
-                                            }`}
-                                            style={{ backgroundColor: colorInfo.hex }}
-                                            onClick={() => handleSelectColor(colorInfo.hex)}
-                                            title={`Color ${colorInfo.hex} - Stock total: ${colorInfo.stock}`}
-                                        />
-                                    ))}
+                            {/* Color Selection - Solo mostrar si el producto tiene variaciones de color */}
+                            {hasColorVariations() && (
+                                <div className="mb-6">
+                                    <h3 className="text-lg font-semibold mb-3">COLOR:</h3>
+                                    <div className="flex flex-wrap gap-3">
+                                        {getAvailableColors().map((colorInfo) => (
+                                            <button
+                                                key={colorInfo.hex}
+                                                className={`w-12 h-12 rounded-full border-4 transition-all ${
+                                                    selectColor === colorInfo.hex
+                                                        ? 'border-indigo-500 scale-110'
+                                                        : 'border-gray-300 hover:border-gray-400'
+                                                }`}
+                                                style={{ backgroundColor: colorInfo.hex }}
+                                                onClick={() => handleSelectColor(colorInfo.hex)}
+                                                title={`Color ${colorInfo.hex} - Stock total: ${colorInfo.stock}`}
+                                            />
+                                        ))}
+                                    </div>
+                                    {selectColor && (
+                                        <p className="text-sm text-gray-600 mt-2">
+                                            Color seleccionado: {selectColor}
+                                        </p>
+                                    )}
                                 </div>
-                                {selectColor && (
-                                    <p className="text-sm text-gray-600 mt-2">
-                                        Color seleccionado: {selectColor}
-                                    </p>
-                                )}
-                            </div>
+                            )}
 
                             {/* Model Selection */}
                             <div className="mb-6">
                                 <h3 className="text-lg font-semibold mb-3">MODELO:</h3>
                                 <div className="grid grid-cols-4 gap-2">
                                     {getAvailableModels().map((modelName) => {
-                                        const modelHasStock = selectColor ? hasStock(modelName, selectColor) : hasStock(modelName);
+                                        const modelHasStock = hasColorVariations() 
+                                            ? (selectColor ? hasStock(modelName, selectColor) : hasStock(modelName))
+                                            : hasStock(modelName);
                                         return (
                                             <button
                                                 key={modelName}
@@ -311,7 +347,7 @@ function Product() {
                                                 {modelName}
                                                 {!modelHasStock && (
                                                     <span className="block text-xs mt-1">
-                                                        {selectColor ? 'No disponible en este color' : 'Sin stock'}
+                                                        {hasColorVariations() && selectColor ? 'No disponible en este color' : 'No disponible para esta funda'}
                                                     </span>
                                                 )}
                                                 {selectModel === modelName && modelHasStock && (
@@ -330,15 +366,17 @@ function Product() {
                                 </div>
                                 <button
                                     className={`flex-1 py-3 px-6 rounded font-medium transition-colors ${
-                                        selectModel && selectColor
+                                        selectModel && (hasColorVariations() ? selectColor : true)
                                             ? 'bg-red-500 text-white hover:bg-red-600'
                                             : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                     }`}
                                     onClick={() => product && handleAddCart(product)}
-                                    disabled={!selectModel || !selectColor}
+                                    disabled={!selectModel || (hasColorVariations() && !selectColor)}
                                 >
-                                    {!selectModel || !selectColor 
-                                        ? 'Selecciona modelo y color' 
+                                    {!selectModel 
+                                        ? 'Selecciona modelo' 
+                                        : hasColorVariations() && !selectColor
+                                        ? 'Selecciona color'
                                         : 'Agregar al carrito'
                                     }
                                 </button>
