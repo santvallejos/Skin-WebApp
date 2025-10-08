@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import supabase from '@/lib/supabase';
 
-// Array de modelos de celulares basado en la imagen proporcionada
+// Fallback phone models in case Supabase fetch fails
 const PHONE_MODELS: string[] = [
   'iPhone 11',
   'iPhone 11 Pro',
@@ -32,14 +32,12 @@ export const usePhoneModels = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Si ya tenemos modelos en caché, no hacemos nada
-    if (cachedModels) {
+    if (cachedModels) { // If models are already cached, use them 
       setModels(cachedModels);
       return;
     }
 
-    // Si ya se está cargando, suscribirse a los cambios
-    if (isLoading) {
+    if (isLoading) { // If already loading, subscribe to changes
       const unsubscribe = (newModels: string[]) => {
         setModels(newModels);
         setLoading(false);
@@ -52,7 +50,7 @@ export const usePhoneModels = () => {
       };
     }
 
-    // Cargar modelos desde Supabase
+    // Load models from Supabase
     const fetchModels = async () => {
       isLoading = true;
       setLoading(true);
@@ -72,8 +70,8 @@ export const usePhoneModels = () => {
           const modelNames = data?.map((item: { name: string }) => item.name) || PHONE_MODELS;
           cachedModels = modelNames;
           setModels(modelNames);
-          
-          // Notificar a todos los suscriptores
+
+          // Notify subscribers
           subscribers.forEach(callback => callback(modelNames));
         }
       } catch (err) {
@@ -95,9 +93,9 @@ export const usePhoneModels = () => {
     models,
     loading,
     error,
-    // Función para obtener modelos sincrónicamente (útil para casos donde ya están cargados)
+    // Get models synchronously
     getModelsSync: () => cachedModels || PHONE_MODELS,
-    // Función para refrescar modelos
+    // Refresh models from Supabase
     refreshModels: async () => {
       cachedModels = null;
       const { data, error } = await supabase

@@ -11,7 +11,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Rutas que usan Layout */}
+        {/* Routes with Layout */}
         <Route element={<Layaout />}>
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
@@ -20,7 +20,7 @@ function App() {
           <Route path="/test-supabase" element={<TestSupabase />} />
         </Route>
 
-        {/* Ruta 404 SIN layout */}
+        {/* Fallback route for 404 Not Found */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

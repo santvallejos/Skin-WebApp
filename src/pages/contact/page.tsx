@@ -11,12 +11,18 @@ import {
 } from '@/components/ui/dialog';
 
 function Contact() {
-  const accessKey = import.meta.env.VITE_API_STATIC_FORMS;
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const recaptchaRef = useRef<ReCAPTCHA>(null);
-  const formRef = useRef<HTMLFormElement>(null);
+  const accessKey = import.meta.env.VITE_API_STATIC_FORMS;          // access key to Static Forms API
+  const [isDialogOpen, setIsDialogOpen] = useState(false);          // state for dialog visibility
+  const [isSubmitting, setIsSubmitting] = useState(false);          // state for form submission status
+  const recaptchaRef = useRef<ReCAPTCHA>(null);                     // ref for reCAPTCHA
+  const formRef = useRef<HTMLFormElement>(null);                    // ref for the form element
 
+  /**
+   * Handles form submission, including reCAPTCHA verification and sending data to Static Forms API.
+   * 
+   * @param e Form event
+   * @returns Handles form submission
+   */
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -24,7 +30,7 @@ function Contact() {
     try {
       const formData = new FormData(formRef.current!);
       
-      // Obtener el token del reCAPTCHA
+      // Get reCAPTCHA token
       const recaptchaToken = recaptchaRef.current?.getValue();
       if (!recaptchaToken) {
         alert('Por favor, completa el reCAPTCHA');
@@ -35,18 +41,16 @@ function Contact() {
       formData.append('g-recaptcha-response', recaptchaToken);
       formData.append('accessKey', accessKey);
 
+      // Send form data to Static Forms API
       const response = await fetch('https://api.staticforms.xyz/submit', {
         method: 'POST',
         body: formData
       });
 
       if (response.ok) {
-        // Mostrar dialog de éxito
-        setIsDialogOpen(true);
-        // Limpiar formulario
-        formRef.current?.reset();
-        // Resetear reCAPTCHA
-        recaptchaRef.current?.reset();
+        setIsDialogOpen(true);         // Open confirmation dialog
+        formRef.current?.reset();      // Reset form fields
+        recaptchaRef.current?.reset(); // Reset reCAPTCHA
       } else {
         throw new Error('Error al enviar el formulario');
       }
@@ -61,11 +65,11 @@ function Contact() {
   return (
     <section className="text-gray-600 body-font relative bg-gray-50">
       <div className="container px-5 py-24 mx-auto flex flex-col">
-        
-        {/* Sección de información de contacto */}
+
+        {/* Contact information section */}
         <div className="w-full bg-white rounded-lg shadow-lg p-8 mb-8 flex flex-col md:flex-row">
           
-          {/* Columna izquierda - Mapa */}
+          {/* Colum left - Map */}
           <div className="md:w-1/2 mb-8 md:mb-0 md:pr-8">
             <div className="rounded-lg overflow-hidden h-80 relative">
               <iframe 
@@ -80,7 +84,7 @@ function Contact() {
             </div>
           </div>
           
-          {/* Columna derecha - Información de contacto */}
+          {/* Colum rigth - contact information*/}
           <div className="md:w-1/2">
             <h2 className="text-2xl font-bold text-gray-900 mb-6 pb-2 border-b">Contacto</h2>
             
@@ -163,7 +167,7 @@ function Contact() {
             ></textarea>
           </div>
 
-          {/* CAPTCHA v2 visible */}
+          {/* CAPTCHA v2 */}
           <div className="mb-6">
             <ReCAPTCHA
               ref={recaptchaRef}
@@ -181,7 +185,7 @@ function Contact() {
         </div>
       </div>
 
-      {/* Dialog de confirmación */}
+      {/* Confirmation dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>

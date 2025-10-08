@@ -32,29 +32,28 @@ const toastErrorAddProduct = () => toast.error("No hay stock disponible", {
 interface cartStore {
     items: CartItem[]; // List products in cart
 
-    // Funciones para manipular el carrito
-    addCart: (product: ProductToCart, quantity: number, stock: number) => void;  // Agregar un producto al carrito
-    removeCart: (id: string) => void;                                            // Remover un producto del carrito
-    updateQuantity: (id: string, quantity: number) => void;                      // Actualizar la cantidad de un producto en el carrito
-    clearCart: () => void;                                                       // Limpiar el carrito
+    addCart: (product: ProductToCart, quantity: number, stock: number) => void;  // Add a product to cart
+    removeCart: (id: string) => void;                                            // Remove a product from cart
+    updateQuantity: (id: string, quantity: number) => void;                      // Update product quantity in cart
+    clearCart: () => void;                                                       // Clear cart
 
     // Getters
-    getSubtotal: (id: string) => number;                                         // Subtotal de un producto
-    getTotal: () => number;                                                      // Total del carrito
+    getSubtotal: (id: string) => number;                                         // Get subtotal of a product
+    getTotal: () => number;                                                      // Get total of cart
 }
 
 export const useCartStore = create<cartStore>((set, get) => ({
-    // inicializar variables
+    // Initialize state
     items: loadCart(),
 
     addCart: (product: ProductToCart, quantity: number, stock: number) => {
-        const productInCar = useCartStore.getState().items.find((item) => item.product.id === product.id && item.product.model === product.model);         // evaluar si el producto del mismo modelo ya esta en el carrito
+        const productInCar = useCartStore.getState().items.find((item) => item.product.id === product.id && item.product.model === product.model && item.product.color === product.color);         // Get the product in cart by id
 
         if (productInCar) {
-            if (stock >= quantity && stock >= productInCar.quantity + quantity) { // Si el stock es mayor o igual a la cantidad del producto y el stock es mayor o igual a la cantidad del producto en el carrito
+            if (stock >= quantity && stock >= productInCar.quantity + quantity) { // If stock is greater than or equal to the quantity of the product and stock is greater than or equal to the quantity of the product in the cart
                 set((state) => ({
                     items: state.items.map((item) => {
-                        if (item.product.id === product.id && item.product.model === product.model) {
+                        if (item.product.id === product.id && item.product.model === product.model && item.product.color === product.color) {
                             return {
                                 ...item,
                                 quantity: item.quantity + quantity
@@ -69,7 +68,7 @@ export const useCartStore = create<cartStore>((set, get) => ({
             }
         } else if (stock >= quantity) {
             set((state) => ({
-                items: [ { id: crypto.randomUUID(), product, quantity, maxStock: stock }, ...state.items ]     // Si el producto no esta en el carrito, agregarlo
+                items: [ { id: crypto.randomUUID(), product, quantity, maxStock: stock }, ...state.items ]     // Add new product to cart
             }))
             toastAddProduct(`${product.name} - $${product.price.toLocaleString('es-AR')} x ${quantity}`);
         } else {
@@ -79,22 +78,21 @@ export const useCartStore = create<cartStore>((set, get) => ({
         saveCart(get().items);
     },
     removeCart: (itemCartId: string) => {
-        // Evaluamos si el producto esta en el carrito
-        const itemInCart = get().items.find((item) => item.id === itemCartId);
+        const itemInCart = get().items.find((item) => item.id === itemCartId); // Get the product in cart by id
 
         if (itemInCart) {
-            // Si el producto esta en el carrito, lo eliminamos, tambien sus cantidades
+            // If product is in cart, remove it along with its quantities
             set((state) => ({
                 items: state.items.filter((item) => item.id !== itemCartId)
             }))
         } else {
-            // Si el producto no esta en el carrito, no hacemos nada
+            // If product is not in cart, do nothing
             return;
         }
         saveCart(get().items);
     },
     updateQuantity: (itemCartId: string, quantity: number) => {
-        const itemInCart = get().items.find((item) => item.id === itemCartId);         // Evaluamos si el producto esta en el carrito
+        const itemInCart = get().items.find((item) => item.id === itemCartId); // Get the product in cart by id
 
         if (itemInCart && quantity > 0) {
             if(itemInCart.maxStock >= quantity && itemInCart.maxStock >= itemInCart.quantity + quantity){
@@ -113,23 +111,21 @@ export const useCartStore = create<cartStore>((set, get) => ({
                 toastErrorAddProduct();
             }
         } else {
-            // Si el producto no esta en el carrito, no hacemos nada
-            return;
+            return; // If product is not in cart, do nothing
         }
         saveCart(get().items);
     },
     clearCart: () => {
-        // Limpiar completamente el carrito
+        // Clear cart
         set({ items: [] });
         localStorage.removeItem(CART_KEY);
     },
-    // Getter: subtotal de un ítem
+    // Getter: subtotal of a product
     getSubtotal: (productId) => {
         const item = get().items.find(item => item.product.id === productId);
         return item ? item.quantity * item.product.price : 0;
     },
-
-    // Getter: total del carrito
+    // Getter: total of cart
     getTotal: () => {
         return get().items.reduce((sum, item) => sum + item.quantity * item.product.price, 0);
     }

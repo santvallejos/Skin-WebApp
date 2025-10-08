@@ -7,9 +7,9 @@ function Layaout() {
   return (
     <>
       <Navbar />
-      <div className="pt-16">
-        <Outlet />
-      </div>
+        <div className="pt-16">
+          <Outlet />
+        </div>
       <Footer />
       <ToastContainer />
     </>

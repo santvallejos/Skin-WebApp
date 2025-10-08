@@ -23,7 +23,7 @@ interface filterStore {
 }
 
 export const useFilterStore = create<filterStore>((set) => ({
-    /* Inicializar las variables */
+    /* Initialize state */
     cases: [],
     //search: '',
     minPrice: 1,
@@ -32,7 +32,7 @@ export const useFilterStore = create<filterStore>((set) => ({
     orderFor: 'highlight', // Default filter
     isLoading: false,
     setProducts: (cases: CaseModel[]) => {
-        set({ cases }); // Actualizar la lista de productos
+        set({ cases }); // Update list of products
     },
     setOrderFor: (option: sort) => {
         set({ orderFor: option});

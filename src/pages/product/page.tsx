@@ -18,14 +18,14 @@ function Product() {
 
     const { models: availableModels } = usePhoneModels();
 
-    const { name: slug } = useParams<{ name: string }>();
-    const [product, setProduct] = useState<CaseModel>();
-    const Quantity = useState<number>(1);
-    const [productsRandom, setProductsRandom] = useState<CaseModel[]>([]);
-    const [selectModel, setSelectModel] = useState<string>();
-    const [selectColor, setSelectColor] = useState<string>();
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [notFound, setNotFound] = useState<boolean>(false);
+    const { name: slug } = useParams<{ name: string }>();                        // Get product name from URL params
+    const [product, setProduct] = useState<CaseModel>();                         // Store the product in a state when querying the product with the name we received as a slug parameter
+    const Quantity = useState<number>(1);                                        // Quantity state   
+    const [productsRandom, setProductsRandom] = useState<CaseModel[]>([]);       // State to store random products
+    const [selectModel, setSelectModel] = useState<string>();                    // State to store selected model
+    const [selectColor, setSelectColor] = useState<string>();                    // State to store selected color
+    const [isLoading, setIsLoading] = useState<boolean>(true);                   // Loading state
+    const [notFound, setNotFound] = useState<boolean>(false);                    // If product not found
 
     /**
      * Check if the product has color variations
@@ -43,8 +43,8 @@ function Product() {
      * 
      * @param product Product to add
      */
-    const handleAddCart = async (product: CaseModel) => {
-        // Para productos sin variaciones de color, buscar stock sin considerar color
+    const handleAddCart = async (product: CaseModel) => { 
+        // For products without color variations, look for stock without considering color
         const selectedStock = hasColorVariations()
             ? product.modelStock.find((stock: CaseStock) =>
                 stock.phone_model?.name === selectModel && stock.color_hex === selectColor
@@ -117,19 +117,19 @@ function Product() {
 
         product.modelStock.forEach(stock => {
             if (stock.stock > 0) {
-                // Si color_hex es null, significa que la funda no tiene color
+                // If color_hex is null, use 'no-color' as key
                 const colorKey = stock.color_hex || 'no-color';
                 const currentStock = colorsMap.get(colorKey) || 0;
                 colorsMap.set(colorKey, currentStock + stock.stock);
             }
         });
 
-        // Si solo hay productos sin color, retornar array vacío para indicar que no hay selección de color
+        // If the only key is 'no-color', return an empty array (indicating no colors)
         if (colorsMap.size === 1 && colorsMap.has('no-color')) {
             return [];
         }
 
-        // Filtrar solo los colores reales (no null)
+        // Filter only real colors (not null)
         return Array.from(colorsMap.entries())
             .filter(([hex]) => hex !== 'no-color')
             .map(([hex, totalStock]) => ({
@@ -177,16 +177,16 @@ function Product() {
                     const prodcutData = await getCasesByName(nameOriginal);
                     setProduct(prodcutData);
 
-                    // Si el producto tiene variaciones de color
+                    // If the product has color variations, select the first available color and model
                     if (prodcutData.modelStock.some(stock => stock.color_hex !== null && stock.stock > 0)) {
-                        // Obtener el primer color disponible
+                        // Get the first available color
                         const firstAvailableStock = prodcutData.modelStock.find((stock: CaseStock) =>
                             stock.stock > 0 && stock.color_hex !== null
                         );
 
                         if (firstAvailableStock) {
                             setSelectColor(firstAvailableStock.color_hex);
-                            // Luego seleccionar el primer modelo disponible para ese color
+                            // Then select the first available model for that color
                             const firstModelForColor = prodcutData.modelStock.find((stock: CaseStock) =>
                                 stock.color_hex === firstAvailableStock.color_hex &&
                                 stock.stock > 0 &&
@@ -197,14 +197,14 @@ function Product() {
                             }
                         }
                     } else {
-                        // Si el producto no tiene variaciones de color, solo seleccionar el primer modelo disponible
+                        // If the product does not have color variations, only select the first available model
                         const firstAvailableStock = prodcutData.modelStock.find((stock: CaseStock) =>
                             stock.stock > 0 && stock.color_hex === null && stock.phone_model
                         );
 
                         if (firstAvailableStock?.phone_model) {
                             setSelectModel(firstAvailableStock.phone_model.name);
-                            setSelectColor(undefined); // No hay color para seleccionar
+                            setSelectColor(undefined); // No color to select
                         }
                     }
 
@@ -298,7 +298,7 @@ function Product() {
                                         <p className="text-sm text-green-600 font-medium mt-2">Envío gratis superando los $35.000</p>
                                     </div>
 
-                                    {/* Color Selection - Solo mostrar si el producto tiene variaciones de color */}
+                                    {/* Color Selection - Show only if the product has color variations */}
                                     {hasColorVariations() && (
                                         <div className="mb-6">
                                             <h3 className="text-lg font-semibold mb-3">COLOR:</h3>
@@ -357,7 +357,8 @@ function Product() {
                                                 );
                                             })}
                                         </div>
-                                    </div>                            {/* Quantity and Add to Cart */}
+                                    </div>                            
+                                    {/* Quantity and Add to Cart */}
                                     <div className="flex items-center gap-4 mb-6">
                                         <div className="flex items-center border border-gray-300 rounded">
                                             <button className="px-3 py-2 hover:bg-gray-100" onClick={removeQuantity}>-</button>

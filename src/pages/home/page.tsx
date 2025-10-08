@@ -2,8 +2,6 @@ import Carousel from '../../components/Carousel';
 import AboutUs from '../../components/AboutUs';
 import AnimatedContent from '@/components/ui/AnimatedContent';
 import { useEffect, useState } from "react";
-/* import { getFeaturedProductsFromSupabase } from "@/services/SupabaseProductsService";
-import type { ProductModel } from "@/models/ProductModel"; */
 import type { CaseModel } from '@/models/ProductModel';
 import { getFeaturedCases } from '@/services/ProductsServices';
 import ListProducts from '@/components/ListProducts';
@@ -11,12 +9,12 @@ import carousel1 from '@/assets/carousel/carousel1.webp';
 import carousel2 from '@/assets/carousel/carousel2.webp';
 
 function Home() {
-    const [featuredProducts, setFeaturedProducts] = useState<CaseModel[]>([]);
+    const [featuredProducts, setFeaturedProducts] = useState<CaseModel[]>([]);          // State to hold featured products
 
     useEffect(() => {
         const fetchFeatureProducts = async () => {
             try {
-                const featuredProductsData = await getFeaturedCases();
+                const featuredProductsData = await getFeaturedCases();         // Fetch featured products from the service
                 setFeaturedProducts(featuredProductsData);
             } catch (error) {
                 console.error("Error fetching products:", error);
@@ -42,7 +40,7 @@ function Home() {
                         <h2 className="text-4xl font-bold text-[#d41e2b] text-shadow-lg/20">Productos Destacados</h2>
                     </div>
 
-                    {/* Lista de productos */}
+                    {/* List of products */}
                     <ListProducts products={featuredProducts} />
                 </div>
             <AboutUs />
