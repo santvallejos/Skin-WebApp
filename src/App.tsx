@@ -5,7 +5,6 @@ import Layaout from './Layaout';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Product from './pages/product/page';
 import NotFound from './pages/404/page';
-import TestSupabase from './pages/TestSupabase';
 
 function App() {
   return (
@@ -17,7 +16,6 @@ function App() {
           <Route path="/products" element={<Products />} />
           <Route path="/products/:name" element={<Product />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/test-supabase" element={<TestSupabase />} />
         </Route>
 
         {/* Fallback route for 404 Not Found */}
