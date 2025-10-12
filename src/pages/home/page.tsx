@@ -48,7 +48,7 @@ function Home() {
                     {/* List of products */}
                     {isLoading ? (
                         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4">
-                            {Array.from({ length: 8 }).map((_, index) => (
+                            {Array.from({ length: 4 }).map((_, index) => (
                                 <div key={index}>
                                     <Skeleton className="h-[522px] w-[322px]" />
                                 </div>

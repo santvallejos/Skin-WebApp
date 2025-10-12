@@ -1,9 +1,12 @@
-import React, { useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import type { ReactNode } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-gsap.registerPlugin(ScrollTrigger);
+// Registrar el plugin una sola vez
+if (typeof window !== 'undefined') {
+    gsap.registerPlugin(ScrollTrigger);
+}
 
 interface AnimatedContentProps {
     children: ReactNode;
@@ -11,7 +14,7 @@ interface AnimatedContentProps {
     direction?: "vertical" | "horizontal";
     reverse?: boolean;
     duration?: number;
-    ease?: string | ((progress: number) => number);
+    ease?: string;
     initialOpacity?: number;
     animateOpacity?: boolean;
     scale?: number;
@@ -20,7 +23,7 @@ interface AnimatedContentProps {
     onComplete?: () => void;
 }
 
-const AnimatedContent: React.FC<AnimatedContentProps> = ({
+const AnimatedContent = ({
     children,
     distance = 100,
     direction = "vertical",
@@ -33,60 +36,80 @@ const AnimatedContent: React.FC<AnimatedContentProps> = ({
     threshold = 0.1,
     delay = 0,
     onComplete,
-}) => {
+}: AnimatedContentProps) => {
     const ref = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const el = ref.current;
-        if (!el) return;
+        if (!el) {
+            console.warn('AnimatedContent: Element ref is null');
+            return;
+        }
 
+        // Determinar el eje de animación
         const axis = direction === "horizontal" ? "x" : "y";
         const offset = reverse ? -distance : distance;
-        const startPct = (1 - threshold) * 100;
+        
+        // Calcular el punto de inicio (más permisivo)
+        const startPct = Math.max(0, Math.min(100, (1 - threshold) * 100));
 
+        console.log('AnimatedContent: Setting up animation', {
+            element: el,
+            axis,
+            offset,
+            startPct: `${startPct}%`
+        });
+
+        // Configurar estado inicial con will-change para mejor rendimiento
         gsap.set(el, {
             [axis]: offset,
-            scale,
+            scale: scale,
             opacity: animateOpacity ? initialOpacity : 1,
+            willChange: 'transform, opacity',
         });
 
-        const animation = gsap.to(el, {
-            [axis]: 0,
-            scale: 1,
-            opacity: 1,
-            duration,
-            ease,
-            delay,
-            onComplete,
-            scrollTrigger: {
-                trigger: el,
-                start: `top ${startPct}%`,
-                toggleActions: "play none none none",
-                once: true,
-            },
-        });
+        // Crear animación con ScrollTrigger
+        const ctx = gsap.context(() => {
+            const animation = gsap.to(el, {
+                [axis]: 0,
+                scale: 1,
+                opacity: 1,
+                duration,
+                ease,
+                delay,
+                onComplete: () => {
+                    console.log('AnimatedContent: Animation complete');
+                    // Remover will-change después de la animación
+                    gsap.set(el, { willChange: 'auto' });
+                    onComplete?.();
+                },
+                scrollTrigger: {
+                    trigger: el,
+                    start: `top ${startPct}%`,
+                    end: `bottom ${startPct}%`,
+                    toggleActions: "play none none none",
+                    once: true,
+                    onEnter: () => console.log('AnimatedContent: ScrollTrigger activated'),
+                    // Descomentar para debug:
+                    // markers: true,
+                },
+            });
 
+            console.log('AnimatedContent: ScrollTrigger created', animation.scrollTrigger);
+        }, el);
+
+        // Cleanup mejorado
         return () => {
-            if (animation.scrollTrigger) {
-                animation.scrollTrigger.kill();
-            }
-            animation.kill();
+            console.log('AnimatedContent: Cleaning up');
+            ctx.revert();
         };
-    }, [
-        distance,
-        direction,
-        reverse,
-        duration,
-        ease,
-        initialOpacity,
-        animateOpacity,
-        scale,
-        threshold,
-        delay,
-        onComplete,
-    ]);
+    }, [distance, direction, reverse, duration, ease, initialOpacity, animateOpacity, scale, threshold, delay, onComplete]);
 
-    return <div ref={ref}>{children}</div>;
+    return (
+        <div ref={ref} style={{ willChange: 'transform, opacity' }}>
+            {children}
+        </div>
+    );
 };
 
 export default AnimatedContent;
