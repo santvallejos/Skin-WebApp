@@ -106,10 +106,10 @@ function Product() {
     }
 
     /**
- * Get available colors with stock
- * 
- * @return Array of colors with stock, or empty array if product has no colors
-*/
+     * Get available colors with stock
+     * 
+     * @return Array of colors with stock, or empty array if product has no colors
+    */
     const getAvailableColors = () => {
         if (!product) return [];
 
@@ -326,8 +326,8 @@ function Product() {
 
                                     {/* Model Selection */}
                                     <div className="mb-6">
-                                        <h3 className="text-lg font-semibold mb-3">MODELO:</h3>
-                                        <div className="grid grid-cols-4 gap-2">
+                                        <h3 className="text-lg font-semibold mb-3">MODELOS:</h3>
+                                        <div className="grid grid-cols-3 lg:grid-cols-4 gap-2">
                                             {getAvailableModels().map((modelName) => {
                                                 const modelHasStock = hasColorVariations()
                                                     ? (selectColor ? hasStock(modelName, selectColor) : hasStock(modelName))
@@ -347,7 +347,7 @@ function Product() {
                                                         {modelName}
                                                         {!modelHasStock && (
                                                             <span className="block text-xs mt-1">
-                                                                {hasColorVariations() && selectColor ? 'No disponible en este color' : 'No disponible para esta funda'}
+                                                                {hasColorVariations() && selectColor ? 'No disponible' : 'No disponible'}
                                                             </span>
                                                         )}
                                                         {selectModel === modelName && modelHasStock && (

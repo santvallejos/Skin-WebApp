@@ -5,19 +5,24 @@ import { useEffect, useState } from "react";
 import type { CaseModel } from '@/models/ProductModel';
 import { getFeaturedCases } from '@/services/ProductsServices';
 import ListProducts from '@/components/ListProducts';
+import { Skeleton } from "@/components/ui/skeleton";
 import carousel1 from '@/assets/carousel/carousel1.webp';
 import carousel2 from '@/assets/carousel/carousel2.webp';
 
 function Home() {
     const [featuredProducts, setFeaturedProducts] = useState<CaseModel[]>([]);          // State to hold featured products
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchFeatureProducts = async () => {
             try {
+                setIsLoading(true);
                 const featuredProductsData = await getFeaturedCases();         // Fetch featured products from the service
                 setFeaturedProducts(featuredProductsData);
             } catch (error) {
                 console.error("Error fetching products:", error);
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -41,7 +46,17 @@ function Home() {
                     </div>
 
                     {/* List of products */}
-                    <ListProducts products={featuredProducts} />
+                    {isLoading ? (
+                        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4">
+                            {Array.from({ length: 8 }).map((_, index) => (
+                                <div key={index}>
+                                    <Skeleton className="h-[522px] w-[322px]" />
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <ListProducts products={featuredProducts} />
+                    )}
                 </div>
             <AboutUs />
 
